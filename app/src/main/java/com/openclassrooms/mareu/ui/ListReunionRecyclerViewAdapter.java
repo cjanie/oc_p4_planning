@@ -33,6 +33,10 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
     @Override
     public void onBindViewHolder(@NonNull ListReunionRecyclerViewAdapter.ViewHolder holder, int position) {
         Reunion reunion = this.reunions.get(position);
+        holder.mainInformations.setText(
+                holder.itemView.getContext().getString(R.string.reunion) + " " + reunion.getCharSequence()
+                        + " - "
+        );
     }
 
 
