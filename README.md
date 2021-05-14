@@ -1,4 +1,3 @@
-# oc_p4_planning_mareu
-Create application to manage meetings
+# Create application to manage meetings
 
-TDD to handle reservations
+TDD to handle reservations of places
