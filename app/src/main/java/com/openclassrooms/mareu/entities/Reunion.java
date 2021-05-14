@@ -8,6 +8,10 @@ public class Reunion {
 
     private String subject;
 
+    private LocalDateTime start;
+
+    private LocalDateTime end;
+
     private Place place;
 
     private List<Participant> participants;
@@ -22,6 +26,22 @@ public class Reunion {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public void setStart(LocalDateTime start) {
+        this.start = start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
     }
 
     public Place getPlace() {

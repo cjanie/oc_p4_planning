@@ -40,7 +40,7 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
         Reunion reunion = this.reunions.get(position);
         holder.mainInformations.setText(
                 holder.itemView.getContext().getString(R.string.reunion) + " " + reunion.getSubject()
-                        + " - " + " - " + reunion.getPlace().getName()
+                        + " - " + reunion.getStart().toString() + "-" + reunion.getEnd().toString() + " - " + reunion.getPlace().getName()
         );
         Glide.with(holder.image.getContext()).applyDefaultRequestOptions(RequestOptions.circleCropTransform());
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {

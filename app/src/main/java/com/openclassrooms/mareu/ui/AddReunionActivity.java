@@ -30,6 +30,12 @@ import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reservation;
 import com.openclassrooms.mareu.entities.Reunion;
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndTimeException;
+import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.exceptions.PassedDatesException;
+import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
+import com.openclassrooms.mareu.exceptions.UnavailableException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,6 +65,8 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
     private LocalDate reunionDate;
     private LocalDateTime start;
     private LocalDateTime end;
+
+    private Reservation reservation;
     private Place place;
 
 
@@ -108,23 +116,26 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
         this.dateInput.setText(this.formatDateToString(today));
 
         // Set places into spinner
-        List<String> placesNames = new ArrayList<>();
-        PlaceService.getInstance().getAvailablePlaces().observe(this, new Observer<List<Place>>() {
+        /*
+        PlaceService.getInstance().getPlaces().observe(this, new Observer<List<Place>>() {
             @Override
             public void onChanged(List<Place> places) {
-                if(places != null) {
-                    PlaceArrayAdapter placeArrayAdapter = new PlaceArrayAdapter(AddReunionActivity.this, 0, places);
-                    placeSpinner.setAdapter(placeArrayAdapter);
-                    placeSpinner.setOnItemClickListener(AddReunionActivity.this);
-                    placeSpinner.setText(places.get(0).getName());
-                    place = places.get(0);
-                }
+                configurePlaceSpinner(places);
             }
         });
 
+         */
     }
 
-
+    private void configurePlaceSpinner(List<Place> places) {
+        if(places != null && !places.isEmpty()) {
+            PlaceArrayAdapter placeArrayAdapter = new PlaceArrayAdapter(AddReunionActivity.this, 0, places);
+            placeSpinner.setAdapter(placeArrayAdapter);
+            placeSpinner.setOnItemClickListener(AddReunionActivity.this);
+            placeSpinner.setText(places.get(0).getName());
+            place = places.get(0);
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private String formatDateToString(LocalDate date) {
@@ -184,6 +195,7 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
                 } else {
                     start = selected;
                     startInput.setText(formatTimeToString(start));
+                    endInput.setText(null);
                 }
             }
         }, hourNow, minNow, true); // True for 24 hour time
@@ -203,6 +215,33 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
                     } else {
                         end = selected;
                         endInput.setText(formatTimeToString(end));
+                        try {
+                            reservation = new Reservation(start, end);
+                            PlaceService.getInstance().getAvailablePlaces(reservation).observe(AddReunionActivity.this, new Observer<List<Place>>() {
+                                @Override
+                                public void onChanged(List<Place> places) {
+                                    configurePlaceSpinner(places);
+                                }
+                            });
+                        } catch (NullDatesException e) {
+                            e.printStackTrace();
+                            signalErrorInSnackbar(e.getMessage(), startInput);
+                        } catch (NullStartTimeException e) {
+                            e.printStackTrace();
+                            signalErrorInSnackbar(e.getMessage(), startInput);
+                        } catch (NullEndTimeException e) {
+                            e.printStackTrace();
+                            signalErrorInSnackbar(e.getMessage(), endInput);
+                        } catch (PassedDatesException e) {
+                            e.printStackTrace();
+                            signalErrorInSnackbar(e.getMessage(), startInput);
+                        } catch (PassedStartTimeException e) {
+                            e.printStackTrace();
+                            signalErrorInSnackbar(e.getMessage(), startInput);
+                        } catch (InvalidEndTimeException e) {
+                            e.printStackTrace();
+                            signalErrorInSnackbar(e.getMessage(), endInput);
+                        }
                     }
                 }
             }, this.start.getHour(), this.start.getMinute(), true); // True for 24 hour time
@@ -211,6 +250,12 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
         } else {
             this.signalErrorInSnackbar(this.getString(R.string.error_no_start_time_selected), this.endInput);
         }
+    }
+
+    private void navigateToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        this.startActivity(intent);
+        this.finish();
     }
 
     @Override
@@ -222,9 +267,7 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         if(v == this.backButton) {
-            Intent intent = new Intent(this, MainActivity.class);
-            this.startActivity(intent);
-            this.finish();
+            this.navigateToMainActivity();
         } else if(v == this.dateLayout || v == this.dateInput) {
             this.showDatePickerDialog();
         } else if(v == this.startLayout || v == this.startInput) {
@@ -232,23 +275,27 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
         } else if(v == this.endLayout || v == this.endInput) {
             this.showEndTimePickerDialog();
         } else if(v == this.saveButton) {
-            /*
+
             if(!TextUtils.isEmpty(this.subject.getEditText().getText())) {
                 if(this.place != null) {
                     if(this.start != null) {
                         if(this.end != null) {
-                            Reservation reservation = null;
-                            try {
-                                reservation = new Reservation(this.start, this.end);
-                            } catch (InvalidEndTimeException e) {
-                                e.printStackTrace();
-                                this.signalErrorInSnackbar(this.getString(R.string.error_invalid_end_time), this.endInput);
+                            if(this.reservation != null) {
+                                try {
+                                    this.place.reserve(reservation);
+                                } catch (UnavailableException e) {
+                                    e.printStackTrace();
+                                    this.signalErrorInSnackbar(e.getMessage(), this.placeSpinner);
+                                }
                             }
-                            this.place.getReservations().add(reservation);
                             Reunion reunion = new Reunion();
                             reunion.setSubject(this.subject.getEditText().getText().toString());
+                            reunion.setStart(this.reservation.getStart());
+                            reunion.setEnd(this.reservation.getEnd());
                             reunion.setPlace(this.place);
                             ReunionService.getInstance().addReunion(reunion);
+                            this.navigateToMainActivity();
+
                         } else {
                             this.signalErrorInSnackbar(this.getString(R.string.error_no_end_time_selected), this.endInput);
                         }
@@ -261,8 +308,6 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
             } else {
                 this.signalErrorInSnackbar(this.getString(R.string.error_empty_subject), this.subject);
             }
-
-        */
         }
     }
 }
