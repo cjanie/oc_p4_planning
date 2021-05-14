@@ -6,9 +6,7 @@ import java.util.List;
 
 public class Reunion {
 
-    private CharSequence charSequence;
-
-    private LocalDateTime localDateTime;
+    private String subject;
 
     private Place place;
 
@@ -18,20 +16,12 @@ public class Reunion {
         this.participants = new ArrayList<>();
     }
 
-    public CharSequence getCharSequence() {
-        return charSequence;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setCharSequence(CharSequence charSequence) {
-        this.charSequence = charSequence;
-    }
-
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
-    }
-
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public Place getPlace() {

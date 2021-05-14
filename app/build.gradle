@@ -34,6 +34,21 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.+'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+    testImplementation 'org.junit.platform:junit-platform-runner:1.5.2'
+
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+
+    // EVENT BUS
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
+    // JODA TIME
+    implementation 'joda-time:joda-time:2.10.9'
+
+
+
 }

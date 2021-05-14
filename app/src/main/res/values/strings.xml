@@ -1,4 +1,22 @@
 <resources>
     <string name="app_name">Mareu</string>
     <string name="reunion">Reunion</string>
+    <string name="reunion_subject">Reunion subject</string>
+    <string name="error_empty_subject">Error: subject field is empty.</string>
+    <string name="today">Today</string>
+    <string name="date">Date</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="select_date">Select date</string>
+    <string name="select_start_time">Select start time</string>
+    <string name="select_end_time">Select end time</string>
+    <string name="error_date_passed">Error: date has passed over.</string>
+    <string name="error_time_passed">Error: time has passed over.</string>
+    <string name="error_invalid_end_time">Error: invalid end time.</string>
+    <string name="error_no_start_time_selected">Error: no start time selected.</string>
+    <string name="error_no_end_time_selected">Error: no end time selected.</string>
+    <string name="place">Place</string>
+    <string name="error_no_place">Error: no place available at this time.</string>
+    <string name="participants">Participants</string>
+    <string name="save">Save</string>
 </resources>

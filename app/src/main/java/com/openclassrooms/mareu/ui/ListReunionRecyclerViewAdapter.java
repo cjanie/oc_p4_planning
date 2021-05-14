@@ -9,8 +9,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.entities.Reunion;
+import com.openclassrooms.mareu.events.DeleteReunionEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -34,9 +39,26 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
     public void onBindViewHolder(@NonNull ListReunionRecyclerViewAdapter.ViewHolder holder, int position) {
         Reunion reunion = this.reunions.get(position);
         holder.mainInformations.setText(
-                holder.itemView.getContext().getString(R.string.reunion) + " " + reunion.getCharSequence()
-                        + " - "
+                holder.itemView.getContext().getString(R.string.reunion) + " " + reunion.getSubject()
+                        + " - " + " - " + reunion.getPlace().getName()
         );
+        Glide.with(holder.image.getContext()).applyDefaultRequestOptions(RequestOptions.circleCropTransform());
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new DeleteReunionEvent(reunion));
+            }
+        });
+        if(reunion.getParticipants() != null) {
+            if(!reunion.getParticipants().isEmpty()) {
+                String string = "";
+                for(int i = 0; i<reunion.getParticipants().size(); i++) {
+                    string += reunion.getParticipants().get(i).getEmail() + ", ";
+                }
+                string = string.substring(0, string.length() - 2);
+                holder.participants.setText(string);
+            }
+        }
     }
 
 

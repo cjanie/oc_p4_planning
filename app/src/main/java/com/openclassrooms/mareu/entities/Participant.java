@@ -8,7 +8,11 @@ public class Participant {
 
     public Participant(String firstName) {
         this.firstName = firstName;
-        this.email = this.firstName.toLowerCase() + "@lamzone.com";
+    }
+
+    public Participant(String firstName, String email) {
+        this(firstName);
+        this.email = email;
     }
 
     public String getFirstName() {
@@ -23,4 +27,7 @@ public class Participant {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
