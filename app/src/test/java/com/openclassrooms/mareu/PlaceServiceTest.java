@@ -6,20 +6,18 @@ import com.openclassrooms.mareu.entities.Place;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
 
 public class PlaceServiceTest {
 
     private PlaceService placeService;
-    private List<Place> availablePlaces;
+    private List<Place> places;
 
     @Before
     public void setUp() {
         this.placeService = PlaceService.getNewInstance();
-        this.availablePlaces = this.placeService.getAvailablePlaces().getValue();
+        this.places = this.placeService.getPlaces().getValue();
     }
 
 
@@ -27,11 +25,11 @@ public class PlaceServiceTest {
     @Test
     public void getRandomPlaceShouldRemovePlaceFromAvailablePlaces() {
         // at init
-        assert(this.availablePlaces.size() == PlaceService.PLACES.size());
+        assert(this.places.size() == PlaceService.PLACES.size());
         // getRandom
 
         // check mount of available places
-        assert(this.availablePlaces.size() == PlaceService.PLACES.size() - 1);
+        assert(this.places.size() == PlaceService.PLACES.size() - 1);
     }
 
     @Test
@@ -39,6 +37,6 @@ public class PlaceServiceTest {
         for(int i = 0; i<PlaceService.PLACES.size(); i++) {
 
         }
-        assert(this.availablePlaces.isEmpty());
+        assert(this.places.isEmpty());
     }
 }

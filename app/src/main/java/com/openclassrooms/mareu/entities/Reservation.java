@@ -4,11 +4,11 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullDatesException;
 import com.openclassrooms.mareu.exceptions.NullEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullStartTimeException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
-import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
 import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
 
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ public class Reservation {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Reservation(LocalDateTime start, LocalDateTime end)
-            throws NullDatesException,NullStartTimeException, NullEndTimeException,
+            throws NullDatesException, NullStartTimeException, NullEndTimeException,
             PassedDatesException, PassedStartTimeException, InvalidEndTimeException {
 
         LocalDateTime now = LocalDateTime.now();

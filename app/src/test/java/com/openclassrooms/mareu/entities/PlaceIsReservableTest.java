@@ -6,7 +6,7 @@ import com.openclassrooms.mareu.exceptions.NullEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullStartTimeException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
-import com.openclassrooms.mareu.exceptions.UnavailableException;
+import com.openclassrooms.mareu.exceptions.IsUnavailableException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class PlaceRequiresReservationTest {
+public class PlaceIsReservableTest {
 
     private LocalDateTime now;
 
@@ -99,7 +99,7 @@ public class PlaceRequiresReservationTest {
      */
 
     @Test
-    public void reserveWithSuccessShouldAddReservation() throws PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, UnavailableException {
+    public void reserveWithSuccessShouldAddReservation() throws PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, IsUnavailableException {
         Place place = new Place();
         place.reserve(this.resAt7);
         place.reserve(new Reservation(this.now.plusHours(4), this.now.plusHours(5)));
@@ -108,8 +108,8 @@ public class PlaceRequiresReservationTest {
         assert(place.getReservations().size() == 3);
     }
 
-    @Test(expected = UnavailableException.class)
-    public void reserveWithoutSuccessShouldThrowUnavailableException() throws UnavailableException, PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    @Test(expected = IsUnavailableException.class)
+    public void reserveWithoutSuccessShouldThrowUnavailableException() throws IsUnavailableException, PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
         Place place = new Place();
         place.reserve(this.resAt7);
         place.reserve(this.resAt4);

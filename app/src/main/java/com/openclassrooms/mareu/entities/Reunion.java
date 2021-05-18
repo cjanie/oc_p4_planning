@@ -1,24 +1,34 @@
 package com.openclassrooms.mareu.entities;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndTimeException;
+import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.exceptions.PassedDatesException;
+import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Reunion {
+public class Reunion extends Reservation {
 
     private String subject;
-
-    private LocalDateTime start;
-
-    private LocalDateTime end;
 
     private Place place;
 
     private List<Participant> participants;
 
-    public Reunion() {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Reunion(LocalDateTime start, LocalDateTime end) throws NullDatesException, NullStartTimeException, NullEndTimeException, PassedDatesException, PassedStartTimeException, InvalidEndTimeException {
+        super(start, end);
         this.participants = new ArrayList<>();
     }
+
 
     public String getSubject() {
         return subject;
@@ -26,22 +36,6 @@ public class Reunion {
 
     public void setSubject(String subject) {
         this.subject = subject;
-    }
-
-    public LocalDateTime getStart() {
-        return start;
-    }
-
-    public void setStart(LocalDateTime start) {
-        this.start = start;
-    }
-
-    public LocalDateTime getEnd() {
-        return end;
-    }
-
-    public void setEnd(LocalDateTime end) {
-        this.end = end;
     }
 
     public Place getPlace() {

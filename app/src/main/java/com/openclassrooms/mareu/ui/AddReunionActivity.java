@@ -35,13 +35,12 @@ import com.openclassrooms.mareu.exceptions.NullEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullStartTimeException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
-import com.openclassrooms.mareu.exceptions.UnavailableException;
+import com.openclassrooms.mareu.exceptions.IsUnavailableException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -283,15 +282,28 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
                             if(this.reservation != null) {
                                 try {
                                     this.place.reserve(reservation);
-                                } catch (UnavailableException e) {
+                                } catch (IsUnavailableException e) {
                                     e.printStackTrace();
                                     this.signalErrorInSnackbar(e.getMessage(), this.placeSpinner);
                                 }
                             }
-                            Reunion reunion = new Reunion();
+                            Reunion reunion = null;
+                            try {
+                                reunion = new Reunion(this.reservation.getStart(), this.reservation.getEnd());
+                            } catch (NullDatesException e) {
+                                e.printStackTrace();
+                            } catch (NullStartTimeException e) {
+                                e.printStackTrace();
+                            } catch (NullEndTimeException e) {
+                                e.printStackTrace();
+                            } catch (PassedDatesException e) {
+                                e.printStackTrace();
+                            } catch (PassedStartTimeException e) {
+                                e.printStackTrace();
+                            } catch (InvalidEndTimeException e) {
+                                e.printStackTrace();
+                            }
                             reunion.setSubject(this.subject.getEditText().getText().toString());
-                            reunion.setStart(this.reservation.getStart());
-                            reunion.setEnd(this.reservation.getEnd());
                             reunion.setPlace(this.place);
                             ReunionService.getInstance().addReunion(reunion);
                             this.navigateToMainActivity();
