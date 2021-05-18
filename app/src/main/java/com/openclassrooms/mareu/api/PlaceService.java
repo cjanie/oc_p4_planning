@@ -16,7 +16,6 @@ public class PlaceService {
 
     public static List<Place> PLACES = Arrays.asList(
             new Place("Palerme"),
-            new Place("Rome"),
             new Place("Khartoum"),
             new Place("Jakarta")
     );

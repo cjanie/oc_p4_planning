@@ -22,7 +22,7 @@ public class ParticipantServiceTest {
     @Before
     public void setUp() {
         this.participantService = ParticipantService.getNewInstance();
-        this.availableParticipants = this.participantService.getAvailableParticipants().getValue();
+        this.availableParticipants = this.participantService.getParticipants().getValue();
 
     }
 

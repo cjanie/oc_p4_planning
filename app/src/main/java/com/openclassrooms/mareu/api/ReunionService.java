@@ -1,11 +1,13 @@
 package com.openclassrooms.mareu.api;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.MutableLiveData;
 
 import com.openclassrooms.mareu.entities.Reunion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ReunionService {
@@ -44,11 +46,15 @@ public class ReunionService {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void removeReunion(Reunion reunion) {
         List<Reunion> reunions = this.mutableLiveDataReunions.getValue();
         if(reunions != null && reunions.contains(reunion)) {
             reunions.remove(reunion);
             this.mutableLiveDataReunions.setValue(reunions);
+
+            reunion.getPlace().removeReservation(reunion);
+
         }
     }
 

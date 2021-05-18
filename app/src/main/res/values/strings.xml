@@ -18,5 +18,6 @@
     <string name="place">Place</string>
     <string name="error_no_place">Error: no place available at this time.</string>
     <string name="participants">Participants</string>
+    <string name="participant">Participant</string>
     <string name="save">Save</string>
 </resources>

@@ -18,6 +18,14 @@ public class HasPlanning {
         this.reservations = new ArrayList<>();
     }
 
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void addToPlanningRespectingAscendantOrderOfTime(Reservation reservation) {
         if(this.reservations.isEmpty()) {
@@ -72,11 +80,14 @@ public class HasPlanning {
         }
     }
 
-    public List<Reservation> getReservations() {
-        return reservations;
+    protected void removeReservationFromPlanning(Reservation reservation) {
+        for(int i=0; i<this.reservations.size(); i++) {
+            if(this.reservations.get(i).getStart().equals(reservation.getStart())) {
+                this.reservations.remove(reservations.get(i));
+                break;
+            }
+        }
     }
 
-    public void setReservations(List<Reservation> reservations) {
-        this.reservations = reservations;
-    }
+
 }

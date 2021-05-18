@@ -117,4 +117,14 @@ public class PlaceIsReservableTest {
         place.reserve(new Reservation(this.now.plusHours(4), this.now.plusHours(7)));
     }
 
+    @Test
+    public void resetPlaceAvailableAtDefinedTimeShouldRemoveReservationStartingAtThisTime() throws IsUnavailableException, PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+        Place place = new Place();
+        Reservation reservation = new Reservation(this.now.plusHours(2), this.now.plusHours(3));
+        place.reserve(reservation);
+        Reunion reunion = new Reunion(this.now.plusHours(2), this.now.plusHours(3));
+        place.removeReservation(reunion);
+        assert(place.getReservations().size() == 0);
+        assertFalse(place.getReservations().contains(reservation));
+    }
 }

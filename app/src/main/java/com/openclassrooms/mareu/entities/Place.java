@@ -8,6 +8,8 @@ import androidx.annotation.RequiresApi;
 import com.openclassrooms.mareu.exceptions.IsUnavailableException;
 import com.openclassrooms.mareu.interfaces.IsReservable;
 
+import java.time.LocalDateTime;
+
 public class Place extends HasPlanning implements IsReservable {
 
     private String name;
@@ -50,5 +52,11 @@ public class Place extends HasPlanning implements IsReservable {
     @Override
     public void reserve(Reservation reservation) throws IsUnavailableException {
         this.addToPlanningIfHasFreeSlotForReservation(reservation);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void removeReservation(Reservation reservation) {
+        this.removeReservationFromPlanning(reservation);
     }
 }

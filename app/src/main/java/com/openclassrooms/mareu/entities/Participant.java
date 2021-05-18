@@ -7,6 +7,8 @@ import androidx.annotation.RequiresApi;
 import com.openclassrooms.mareu.exceptions.IsUnavailableException;
 import com.openclassrooms.mareu.interfaces.IsAssignable;
 
+import java.time.LocalDateTime;
+
 public class Participant extends HasPlanning implements IsAssignable {
 
     private String firstName;
@@ -53,5 +55,11 @@ public class Participant extends HasPlanning implements IsAssignable {
     @Override
     public void assign(Reunion reunion) throws IsUnavailableException {
         this.addToPlanningIfHasFreeSlotForReservation(reunion);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void removeAssignation(Reunion reunion) {
+        this.removeReservationFromPlanning(reunion);
     }
 }

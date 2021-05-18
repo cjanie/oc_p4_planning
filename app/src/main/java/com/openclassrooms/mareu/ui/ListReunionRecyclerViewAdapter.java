@@ -1,5 +1,6 @@
 package com.openclassrooms.mareu.ui;
 
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -14,6 +16,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.entities.Reunion;
 import com.openclassrooms.mareu.events.DeleteReunionEvent;
+import com.openclassrooms.mareu.utils.CustomDateTimeFormatter;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -35,12 +38,14 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
         return new ListReunionRecyclerViewAdapter.ViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull ListReunionRecyclerViewAdapter.ViewHolder holder, int position) {
         Reunion reunion = this.reunions.get(position);
+        CustomDateTimeFormatter customDateTimeFormatter = new CustomDateTimeFormatter();
         holder.mainInformations.setText(
                 holder.itemView.getContext().getString(R.string.reunion) + " " + reunion.getSubject()
-                        + " - " + reunion.getStart().toString() + "-" + reunion.getEnd().toString() + " - " + reunion.getPlace().getName()
+                        + " - " + customDateTimeFormatter.formatTimeToString(reunion.getStart()) + "-" + customDateTimeFormatter.formatTimeToString(reunion.getEnd()) + " - " + reunion.getPlace().getName()
         );
         Glide.with(holder.image.getContext()).applyDefaultRequestOptions(RequestOptions.circleCropTransform());
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {

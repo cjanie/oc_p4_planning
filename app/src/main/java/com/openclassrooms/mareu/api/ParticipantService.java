@@ -7,7 +7,6 @@ import com.openclassrooms.mareu.entities.Participant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 public class ParticipantService {
 
@@ -21,13 +20,13 @@ public class ParticipantService {
             new Participant("Mina")
     );
 
-    private MutableLiveData<List<Participant>> mutableLiveDataAvailableParticipants;
+    private MutableLiveData<List<Participant>> mutableLiveDataParticipants;
 
     private static ParticipantService INSTANCE;
 
     private ParticipantService() {
-        this.mutableLiveDataAvailableParticipants = new MutableLiveData<>();
-        this.mutableLiveDataAvailableParticipants.setValue(new ArrayList<>(ParticipantService.PARTICIPANTS));
+        this.mutableLiveDataParticipants = new MutableLiveData<>();
+        this.mutableLiveDataParticipants.setValue(new ArrayList<>(ParticipantService.PARTICIPANTS));
     }
 
     public static ParticipantService getInstance() {
@@ -41,8 +40,8 @@ public class ParticipantService {
         return new ParticipantService();
     }
 
-    public MutableLiveData<List<Participant>> getAvailableParticipants() {
-        return this.mutableLiveDataAvailableParticipants;
+    public MutableLiveData<List<Participant>> getParticipants() {
+        return this.mutableLiveDataParticipants;
     }
 
 
