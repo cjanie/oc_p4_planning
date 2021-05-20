@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Maréu</string>
+    <string name="reunion">Réunion</string>
+    <string name="reunion_subject">Sujet de la réunion</string>
+    <string name="error_empty_subject">Erreur: le sujet de la réunion n\'est pas renseigné.</string>
+    <string name="today">Aujourd\'hui</string>
+    <string name="date">Date</string>
+    <string name="start">Début</string>
+    <string name="end">Fin</string>
+    <string name="select_date">Sélectionner la date</string>
+    <string name="select_start_time">Sélectionner l\'heure de début</string>
+    <string name="select_end_time">Sélectionner l\'heure de fin</string>
+    <string name="select_participants">Sélectionner les participants</string>
+    <string name="error_date_passed">Erreur: la date est passée.</string>
+    <string name="error_time_passed">Erreur: l\'heure est passée.</string>
+    <string name="error_invalid_end_time">Erreur: l\'heure de fin est invalide.</string>
+    <string name="error_no_start_time_selected">Erreur: l\'heure de début n\'a pas été sélectionnée.</string>
+    <string name="error_no_end_time_selected">Erreur: l\'heure de fin n\'a pas été sélectionnée.</string>
+    <string name="place">Place</string>
+    <string name="error_no_place">Erreur: aucune place n\'est disponible à cette heure.</string>
+    <string name="participants">Participants</string>
+    <string name="participant">Participant</string>
+    <string name="done">Terminé</string>
+    <string name="cancel">Annuler</string>
+    <string name="OK">OK</string>
+    <string name="clear">Effacer</string>
+    <string name="save">Sauvegarder</string>
+</resources>

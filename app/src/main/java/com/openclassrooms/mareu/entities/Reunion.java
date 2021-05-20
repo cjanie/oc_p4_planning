@@ -1,9 +1,5 @@
 package com.openclassrooms.mareu.entities;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullDatesException;
 import com.openclassrooms.mareu.exceptions.NullEndTimeException;
@@ -23,7 +19,6 @@ public class Reunion extends Reservation {
 
     private List<Participant> participants;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Reunion(LocalDateTime start, LocalDateTime end) throws NullDatesException, NullStartTimeException, NullEndTimeException, PassedDatesException, PassedStartTimeException, InvalidEndTimeException {
         super(start, end);
         this.participants = new ArrayList<>();

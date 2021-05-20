@@ -10,6 +10,7 @@
     <string name="select_date">Select date</string>
     <string name="select_start_time">Select start time</string>
     <string name="select_end_time">Select end time</string>
+    <string name="select_participants">Select participants</string>
     <string name="error_date_passed">Error: date has passed over.</string>
     <string name="error_time_passed">Error: time has passed over.</string>
     <string name="error_invalid_end_time">Error: invalid end time.</string>
@@ -19,5 +20,9 @@
     <string name="error_no_place">Error: no place available at this time.</string>
     <string name="participants">Participants</string>
     <string name="participant">Participant</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="OK">OK</string>
+    <string name="clear">Clear</string>
     <string name="save">Save</string>
 </resources>

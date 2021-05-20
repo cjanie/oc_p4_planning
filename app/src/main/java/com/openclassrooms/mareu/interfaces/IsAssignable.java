@@ -5,9 +5,7 @@ import com.openclassrooms.mareu.exceptions.IsUnavailableException;
 
 import java.time.LocalDateTime;
 
-public interface IsAssignable {
-
-    boolean isAvailable(Reunion reunion);
+public interface IsAssignable extends IsAvailable {
 
     void assign(Reunion reunion) throws IsUnavailableException;
 

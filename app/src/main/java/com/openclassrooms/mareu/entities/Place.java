@@ -1,14 +1,9 @@
 package com.openclassrooms.mareu.entities;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import com.openclassrooms.mareu.exceptions.IsUnavailableException;
 import com.openclassrooms.mareu.interfaces.IsReservable;
-
-import java.time.LocalDateTime;
 
 public class Place extends HasPlanning implements IsReservable {
 
@@ -41,20 +36,16 @@ public class Place extends HasPlanning implements IsReservable {
         return this.name;
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean isAvailable(Reservation reservation) {
         return this.hasFreeSlotForReservation(reservation);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void reserve(Reservation reservation) throws IsUnavailableException {
         this.addToPlanningIfHasFreeSlotForReservation(reservation);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void removeReservation(Reservation reservation) {
         this.removeReservationFromPlanning(reservation);

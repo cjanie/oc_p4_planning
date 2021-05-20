@@ -23,6 +23,9 @@ android {
         }
     }
     compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -33,6 +36,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     testImplementation 'junit:junit:4.+'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
@@ -46,9 +50,7 @@ dependencies {
     // EVENT BUS
     implementation 'org.greenrobot:eventbus:3.1.1'
 
-    // JODA TIME
-    implementation 'joda-time:joda-time:2.10.9'
-
-
+    // support for the new language APIs, cf. compile options
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.9'
 
 }

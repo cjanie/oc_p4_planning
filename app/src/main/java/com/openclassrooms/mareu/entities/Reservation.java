@@ -1,9 +1,5 @@
 package com.openclassrooms.mareu.entities;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullDatesException;
 import com.openclassrooms.mareu.exceptions.NullEndTimeException;
@@ -18,7 +14,6 @@ public class Reservation {
     private LocalDateTime start;
     private LocalDateTime end;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Reservation(LocalDateTime start, LocalDateTime end)
             throws NullDatesException, NullStartTimeException, NullEndTimeException,
             PassedDatesException, PassedStartTimeException, InvalidEndTimeException {
@@ -39,7 +34,7 @@ public class Reservation {
                 throw new PassedDatesException();
             } else if(start.isBefore(now)) { // case start date is passed
                 throw new PassedStartTimeException();
-            } else {
+            } else if(start.isEqual(now) || start.isAfter(now)) {
                 this.start = start;
                 this.end = end;
             }

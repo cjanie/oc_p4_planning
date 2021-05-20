@@ -5,9 +5,7 @@ import com.openclassrooms.mareu.exceptions.IsUnavailableException;
 
 import java.time.LocalDateTime;
 
-public interface IsReservable {
-
-    boolean isAvailable(Reservation reservation);
+public interface IsReservable extends IsAvailable {
 
     void reserve(Reservation reservation) throws IsUnavailableException;
 

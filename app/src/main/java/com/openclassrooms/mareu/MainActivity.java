@@ -13,12 +13,8 @@ import com.openclassrooms.mareu.ui.AddReunionActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-
     private FloatingActionButton fab;
 
-
-
-    // Override
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,4 +31,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             this.finish();
         }
     }
+
 }

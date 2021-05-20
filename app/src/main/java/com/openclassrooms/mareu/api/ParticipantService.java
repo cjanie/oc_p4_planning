@@ -11,13 +11,13 @@ import java.util.List;
 public class ParticipantService {
 
     public static List<Participant> PARTICIPANTS = Arrays.asList(
-            new Participant("Janie"),
-            new Participant("Isabelle"),
-            new Participant("Nathalie"),
-            new Participant("Fabrice"),
-            new Participant("Guillaume"),
-            new Participant("Terence"),
-            new Participant("Mina")
+            new Participant("Janie", "janie@hotmail.com"),
+            new Participant("Isabelle", "isa@lamzone.com"),
+            new Participant("Nathalie", "nat@lamzone.com"),
+            new Participant("Fabrice", "fab@marseille.fr"),
+            new Participant("Guillaume", "guillaume@montpellier.fr"),
+            new Participant("Terence", "tez@tez.com"),
+            new Participant("Mina", "mina@kad.com")
     );
 
     private MutableLiveData<List<Participant>> mutableLiveDataParticipants;

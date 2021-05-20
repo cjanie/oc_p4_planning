@@ -1,9 +1,5 @@
 package com.openclassrooms.mareu.entities;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.openclassrooms.mareu.exceptions.IsUnavailableException;
 
 import java.time.LocalDateTime;
@@ -26,7 +22,6 @@ public class HasPlanning {
         this.reservations = reservations;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void addToPlanningRespectingAscendantOrderOfTime(Reservation reservation) {
         if(this.reservations.isEmpty()) {
             this.reservations.add(reservation);
@@ -48,7 +43,6 @@ public class HasPlanning {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     protected boolean hasFreeSlotForReservation(Reservation reservation) {
         boolean hasFreeSlot = true;
 
@@ -71,7 +65,6 @@ public class HasPlanning {
         return hasFreeSlot;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     protected void addToPlanningIfHasFreeSlotForReservation(Reservation reservation) throws IsUnavailableException {
         if(this.hasFreeSlotForReservation(reservation)) {
             this.addToPlanningRespectingAscendantOrderOfTime(reservation);
@@ -88,6 +81,5 @@ public class HasPlanning {
             }
         }
     }
-
 
 }

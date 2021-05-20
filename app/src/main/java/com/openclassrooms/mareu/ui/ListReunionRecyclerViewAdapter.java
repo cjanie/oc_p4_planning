@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -38,7 +37,6 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
         return new ListReunionRecyclerViewAdapter.ViewHolder(view);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull ListReunionRecyclerViewAdapter.ViewHolder holder, int position) {
         Reunion reunion = this.reunions.get(position);
