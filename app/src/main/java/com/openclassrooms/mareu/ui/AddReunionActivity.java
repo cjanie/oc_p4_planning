@@ -266,6 +266,7 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
                         @Override
                         public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                             checkedParticipants[which] = isChecked;
+
                             Participant currentParticipant = participants.get(which);
                             if(checkedParticipants[which] == true) {
                                 if(!selectedParticipants.contains(currentParticipant)) {
@@ -276,10 +277,6 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
                                     selectedParticipants.remove(currentParticipant);
                                 }
                             }
-
-
-                            System.out.println(currentParticipant.getFirstName() + " - " + isChecked);
-                            System.out.println(selectedParticipants.size() + " selected");
                         }
                     });
 
@@ -317,6 +314,8 @@ public class AddReunionActivity extends AppCompatActivity implements View.OnClic
                         public void onClick(DialogInterface dialog, int which) {
                             for(int i=0; i<checkedParticipants.length; i++) {
                                 checkedParticipants[i] = false;
+                                selectedParticipants.clear();
+                                participantsSpinner.setText("");
                             }
                         }
                     });
