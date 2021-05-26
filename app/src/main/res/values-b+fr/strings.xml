@@ -20,6 +20,7 @@
     <string name="error_no_place">Erreur: aucune place n\'est disponible à cette heure.</string>
     <string name="participants">Participants</string>
     <string name="participant">Participant</string>
+    <string name="error_no_participant_selected">Erreur: aucun participant n\'a été selectionné.</string>
     <string name="done">Terminé</string>
     <string name="cancel">Annuler</string>
     <string name="OK">OK</string>

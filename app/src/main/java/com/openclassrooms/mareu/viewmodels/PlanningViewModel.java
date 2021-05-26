@@ -11,61 +11,63 @@ import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reservation;
 import com.openclassrooms.mareu.entities.Reunion;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlanningViewModel extends ViewModel {
 
-    private MutableLiveData<List<Place>> availablePlaces;
+    private MutableLiveData<LocalDate> dateOfToday;
 
     private MutableLiveData<List<Participant>> allParticipants;
 
-    private MutableLiveData<List<Participant>> availableParticipants;
+    private MutableLiveData<List<Place>> allPlaces;
 
-    public LiveData<List<Place>> getAvailablePlaces(Reservation reservation) {
-        if(this.availablePlaces == null) {
-            this.availablePlaces = new MutableLiveData<>();
-        }
-        this.loadAvailablePlaces(reservation);
-        return this.availablePlaces;
+    public PlanningViewModel() {
+        this.dateOfToday = new MutableLiveData<>(LocalDate.now());
+        this.allParticipants = ParticipantService.getInstance().getParticipants();
+        this.allPlaces = PlaceService.getInstance().getPlaces();
     }
 
-    public LiveData<List<Participant>> getParticipants() {
-        this.allParticipants = ParticipantService.getInstance().getParticipants();
+    public LiveData<LocalDate> getDateOfToday() {
+        return this.dateOfToday;
+    }
+
+    public LiveData<List<Participant>> getAllParticipants() {
         return this.allParticipants;
     }
 
-    public LiveData<List<Participant>> getAvailableParticipants(Reservation reservation) {
-        if(this.availableParticipants == null) {
-            this.availableParticipants = new MutableLiveData<>();
-        }
-        this.loadAvailableParticipants(reservation);
-        return this.availableParticipants;
+    public LiveData<List<Place>> getAllPlaces() {
+        return this.allPlaces;
     }
 
-    private void loadAvailablePlaces(Reservation reservation) {
-        List<Place> listOfAllPlaces = PlaceService.getInstance().getPlaces().getValue();
+    public LiveData<List<Place>> getAvailablePlaces(Reservation reservation) {
+        MutableLiveData<List<Place>> availablePlaces = new MutableLiveData<>(); // Instantiate the object to return
+        List<Place> listOfAllPlaces = this.allPlaces.getValue(); // Get the data that has to be filtered
         if(listOfAllPlaces != null && !listOfAllPlaces.isEmpty()) {
-            List<Place> listOfAvailablePlaces = new ArrayList<>();
-            for(int i=0; i<listOfAllPlaces.size(); i++) {
-                if(listOfAllPlaces.get(i).isAvailable(reservation)) {
-                    listOfAvailablePlaces.add(listOfAllPlaces.get(i));
+            List<Place> listOfAvailablePlaces = new ArrayList<>(); // Instantiate the list that will receive filtered data
+            for(Place place: listOfAllPlaces) {
+                if(place.isAvailable(reservation)) { // Filter data
+                    listOfAvailablePlaces.add(place);
                 }
             }
-            this.availablePlaces.setValue(listOfAvailablePlaces);
+            availablePlaces.setValue(listOfAvailablePlaces); // Wrap the list of filtered data within the LiveData to return
         }
+        return availablePlaces;
     }
 
-    private void loadAvailableParticipants(Reservation reservation) {
-        List<Participant> listOfAllParticipants = ParticipantService.getInstance().getParticipants().getValue();
+    public LiveData<List<Participant>> getAvailableParticipants(Reservation reservation) {
+        MutableLiveData<List<Participant>> availableParticipants = new MutableLiveData<>(); // Instantiate the object to return
+        List<Participant> listOfAllParticipants = this.allParticipants.getValue(); // Get the data that has to be filtered
         if(listOfAllParticipants != null && !listOfAllParticipants.isEmpty()) {
-            List<Participant> listOfAvailableParticipants = new ArrayList<>();
-            for(int i=0; i<listOfAllParticipants.size(); i++) {
-                if(listOfAllParticipants.get(i).isAvailable(reservation)) {
-                    listOfAvailableParticipants.add(listOfAllParticipants.get(i));
+            List<Participant> listOfAvailableParticipants = new ArrayList<>(); // Instantiate the list that will receive filtered data
+            for(Participant participant: listOfAllParticipants) {
+                if(participant.isAvailable(reservation)) { // Filter data
+                    listOfAvailableParticipants.add(participant);
                 }
             }
-            this.availableParticipants.setValue(listOfAvailableParticipants);
+            availableParticipants.setValue(listOfAvailableParticipants); // Wrap the list of filtered data within the LiveData to return
         }
+        return availableParticipants;
     }
 }
