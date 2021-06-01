@@ -25,16 +25,16 @@ public class PlaceServiceTest {
     @Test
     public void getRandomPlaceShouldRemovePlaceFromAvailablePlaces() {
         // at init
-        assert(this.places.size() == PlaceService.PLACES.size());
+        assert(this.places.size() == PlaceService.LIST_OF_PLACES.size());
         // getRandom
 
         // check mount of available places
-        assert(this.places.size() == PlaceService.PLACES.size() - 1);
+        assert(this.places.size() == PlaceService.LIST_OF_PLACES.size() - 1);
     }
 
     @Test
     public void getRandomPlaceUpToMakeAvailablePlacesListEmptyWithSuccess() {
-        for(int i = 0; i<PlaceService.PLACES.size(); i++) {
+        for(int i = 0; i<PlaceService.LIST_OF_PLACES.size(); i++) {
 
         }
         assert(this.places.isEmpty());

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class PlaceService {
 
-    public static List<Place> PLACES = Arrays.asList(
+    public static final List<Place> LIST_OF_PLACES = Arrays.asList(
             new Place("Palerme"),
             new Place("Khartoum"),
             new Place("Jakarta")
@@ -18,18 +18,18 @@ public class PlaceService {
 
     private MutableLiveData<List<Place>> places;
 
-    private static PlaceService INSTANCE;
+    private static PlaceService instance;
 
     private PlaceService() {
         this.places = new MutableLiveData<>();
-        this.places.setValue(new ArrayList<>(PlaceService.PLACES));
+        this.places.setValue(new ArrayList<>(PlaceService.LIST_OF_PLACES));
     }
 
     public static PlaceService getInstance() {
-        if(PlaceService.INSTANCE == null) {
-            PlaceService.INSTANCE = new PlaceService();
+        if(PlaceService.instance == null) {
+            PlaceService.instance = new PlaceService();
         }
-        return PlaceService.INSTANCE;
+        return PlaceService.instance;
     }
 
     public static PlaceService getNewInstance() {

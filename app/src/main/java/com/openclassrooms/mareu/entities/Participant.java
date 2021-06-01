@@ -1,6 +1,6 @@
 package com.openclassrooms.mareu.entities;
 
-import com.openclassrooms.mareu.exceptions.IsUnavailableException;
+import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 import com.openclassrooms.mareu.interfaces.IsAssignable;
 
 public class Participant extends HasPlanning implements IsAssignable {
@@ -45,7 +45,7 @@ public class Participant extends HasPlanning implements IsAssignable {
     }
 
     @Override
-    public void assign(Reunion reunion) throws IsUnavailableException {
+    public void assign(Reunion reunion) throws UnavailablePlacesException {
         this.addToPlanningIfHasFreeSlotForReservation(reunion);
     }
 

@@ -18,7 +18,8 @@ public class Reservation {
             throws NullDatesException, NullStartTimeException, NullEndTimeException,
             PassedDatesException, PassedStartTimeException, InvalidEndTimeException {
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().minusMinutes(1); // now minus 1 minute to make instantaneous reservation possible
+
 
         if(start == null && end == null) { // case both dates null
             throw new NullDatesException();
@@ -34,7 +35,7 @@ public class Reservation {
                 throw new PassedDatesException();
             } else if(start.isBefore(now)) { // case start date is passed
                 throw new PassedStartTimeException();
-            } else if(start.isEqual(now) || start.isAfter(now)) {
+            } else {
                 this.start = start;
                 this.end = end;
             }

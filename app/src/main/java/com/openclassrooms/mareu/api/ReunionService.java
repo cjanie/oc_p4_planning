@@ -1,7 +1,5 @@
 package com.openclassrooms.mareu.api;
 
-import android.os.Build;
-
 import androidx.lifecycle.MutableLiveData;
 
 import com.openclassrooms.mareu.entities.Reunion;
@@ -13,18 +11,18 @@ public class ReunionService {
 
     private MutableLiveData<List<Reunion>> mutableLiveDataReunions;
 
-    private static ReunionService INSTANCE;
+    private static ReunionService instance;
 
     private ReunionService() {
 
-        this.mutableLiveDataReunions = new MutableLiveData<>();
+        this.mutableLiveDataReunions = new MutableLiveData<>(new ArrayList<>());
     }
 
     public static ReunionService getInstance() {
-        if(ReunionService.INSTANCE == null) {
-            ReunionService.INSTANCE = new ReunionService();
+        if(ReunionService.instance == null) {
+            ReunionService.instance = new ReunionService();
         }
-        return ReunionService.INSTANCE;
+        return ReunionService.instance;
     }
 
     public MutableLiveData<List<Reunion>> getReunions() {
@@ -39,6 +37,13 @@ public class ReunionService {
             this.mutableLiveDataReunions.setValue(reunions);
         } else {
             reunions.add(reunion);
+            this.mutableLiveDataReunions.setValue(reunions);
+        }
+
+    }
+
+    public void saveReunions(List<Reunion> reunions) {
+        if(reunions != null) {
             this.mutableLiveDataReunions.setValue(reunions);
         }
 

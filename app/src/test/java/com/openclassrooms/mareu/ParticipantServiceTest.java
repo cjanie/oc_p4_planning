@@ -31,17 +31,17 @@ public class ParticipantServiceTest {
     @Test
     public void getRandomParticipantShouldRemoveParticipantFromAvailablePartcipants() {
         // all participants should be available at init
-        assert(this.availableParticipants.size() == ParticipantService.PARTICIPANTS.size());
+        assert(this.availableParticipants.size() == ParticipantService.LIST_OF_PARTICIPANTS.size());
         // get a participant from available participants
 
         // check the mount of participant
-        assert(availableParticipants.size() == ParticipantService.PARTICIPANTS.size() - 1);
+        assert(availableParticipants.size() == ParticipantService.LIST_OF_PARTICIPANTS.size() - 1);
     }
 
     @Test
     public void getRandomParticipantUpToToMakeAvailableParticipantsListEmptyWithSuccess() {
 
-        for(int i=0; i<ParticipantService.PARTICIPANTS.size() + 1; i++) {
+        for(int i = 0; i<ParticipantService.LIST_OF_PARTICIPANTS.size() + 1; i++) {
 
         }
         assert(this.availableParticipants.isEmpty());

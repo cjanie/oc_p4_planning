@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +21,7 @@ import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.api.ReunionService;
 import com.openclassrooms.mareu.entities.Reunion;
 import com.openclassrooms.mareu.events.DeleteReunionEvent;
+import com.openclassrooms.mareu.viewmodels.PlanningViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,14 +30,23 @@ import java.util.List;
 
 public class ListReunionFragment extends Fragment {
 
+    private PlanningViewModel planningViewModel;
+
     private RecyclerView recyclerView;
 
-    private MutableLiveData<List<Reunion>> getReunions() {
-        return ReunionService.getInstance().getReunions();
+
+
+    private LiveData<List<Reunion>> getReunions() {
+        return planningViewModel.getAllReunions();
     }
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        this.planningViewModel = new ViewModelProvider(this).get(PlanningViewModel.class);
+
         View root = inflater.inflate(R.layout.fragment_reunion_list, container, false);
         Context context = root.getContext();
         this.recyclerView = (RecyclerView) root;

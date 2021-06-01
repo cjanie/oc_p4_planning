@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ParticipantService {
 
-    public static List<Participant> PARTICIPANTS = Arrays.asList(
+    public static final List<Participant> LIST_OF_PARTICIPANTS = Arrays.asList(
             new Participant("Janie", "janie@hotmail.com"),
             new Participant("Isabelle", "isa@lamzone.com"),
             new Participant("Nathalie", "nat@lamzone.com"),
@@ -20,20 +20,20 @@ public class ParticipantService {
             new Participant("Mina", "mina@kad.com")
     );
 
-    private MutableLiveData<List<Participant>> mutableLiveDataParticipants;
+    private MutableLiveData<List<Participant>> participants;
 
-    private static ParticipantService INSTANCE;
+    private static ParticipantService instance;
 
-    private ParticipantService() {
-        this.mutableLiveDataParticipants = new MutableLiveData<>();
-        this.mutableLiveDataParticipants.setValue(new ArrayList<>(ParticipantService.PARTICIPANTS));
+    public ParticipantService() { // public constructor for tests @Mock
+        this.participants = new MutableLiveData<>();
+        this.participants.setValue(new ArrayList<>(ParticipantService.LIST_OF_PARTICIPANTS));
     }
 
     public static ParticipantService getInstance() {
-        if(ParticipantService.INSTANCE == null) {
-            ParticipantService.INSTANCE = new ParticipantService();
+        if(ParticipantService.instance == null) {
+            ParticipantService.instance = new ParticipantService();
         }
-        return ParticipantService.INSTANCE;
+        return ParticipantService.instance;
     }
 
     public static ParticipantService getNewInstance() {
@@ -41,7 +41,7 @@ public class ParticipantService {
     }
 
     public MutableLiveData<List<Participant>> getParticipants() {
-        return this.mutableLiveDataParticipants;
+        return this.participants;
     }
 
 

@@ -24,7 +24,6 @@ public class Reunion extends Reservation {
         this.participants = new ArrayList<>();
     }
 
-
     public String getSubject() {
         return subject;
     }

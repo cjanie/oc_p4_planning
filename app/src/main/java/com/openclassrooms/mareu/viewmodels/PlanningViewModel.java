@@ -6,34 +6,49 @@ import androidx.lifecycle.ViewModel;
 
 import com.openclassrooms.mareu.api.ParticipantService;
 import com.openclassrooms.mareu.api.PlaceService;
+import com.openclassrooms.mareu.api.ReunionService;
+import com.openclassrooms.mareu.entities.HasPlanning;
 import com.openclassrooms.mareu.entities.Participant;
 import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reservation;
 import com.openclassrooms.mareu.entities.Reunion;
+import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlanningViewModel extends ViewModel {
 
-    private MutableLiveData<LocalDate> dateOfToday;
+    private ParticipantService participantService;
 
     private MutableLiveData<List<Participant>> allParticipants;
 
     private MutableLiveData<List<Place>> allPlaces;
 
+    private MutableLiveData<List<Reunion>> allReunions;
+
     public PlanningViewModel() {
-        this.dateOfToday = new MutableLiveData<>(LocalDate.now());
-        this.allParticipants = ParticipantService.getInstance().getParticipants();
+        this.participantService = ParticipantService.getInstance();
+        this.allParticipants = this.participantService.getParticipants();
         this.allPlaces = PlaceService.getInstance().getPlaces();
+        this.allReunions = ReunionService.getInstance().getReunions();
     }
 
-    public LiveData<LocalDate> getDateOfToday() {
-        return this.dateOfToday;
+    public void setParticipantService(ParticipantService participantService) { // For tests
+        this.participantService = participantService;
+    }
+
+    public void setAllParticipants(MutableLiveData<List<Participant>> allParticipants) {
+            this.allParticipants = allParticipants;
     }
 
     public LiveData<List<Participant>> getAllParticipants() {
+        //this.allParticipants = ParticipantService.getInstance().getParticipants();
+        if(this.allParticipants == null) {
+            this.allParticipants = new MutableLiveData<>(ParticipantService.LIST_OF_PARTICIPANTS);
+        }
         return this.allParticipants;
     }
 
@@ -70,4 +85,50 @@ public class PlanningViewModel extends ViewModel {
         }
         return availableParticipants;
     }
+
+
+
+    public void reservePlace(Place place, Reservation reservation) throws UnavailablePlacesException {
+        place.reserve(reservation);
+    }
+
+    public LiveData<List<Reunion>> getAllReunions() {
+        return this.allReunions;
+    }
+
+    public void saveReunion(Reunion reunion) {
+        this.addToPlanningRespectingAscendantOrderOfTime(reunion);
+        ReunionService.getInstance().saveReunions(this.allReunions.getValue());
+    }
+
+    private void addToPlanningRespectingAscendantOrderOfTime(Reunion reunion) {
+        List<Reunion> sorted = this.allReunions.getValue();
+        if(sorted != null) {
+            if(sorted.isEmpty()) {
+                sorted.add(reunion);
+            } else { // to make a sorted list of reservations
+                LocalDateTime earlierStart = sorted.get(0).getStart();
+                LocalDateTime latestStart = sorted.get(sorted.size() - 1).getStart();
+                if(reunion.getStart().isAfter(latestStart)) {
+                    sorted.add(reunion);
+                } else if(reunion.getStart().isBefore(earlierStart)) {
+                    sorted.add(0, reunion);
+                } else {
+                    for(int i = 0; i<sorted.size(); i++) {
+                        if(sorted.get(i).getStart().isAfter(reunion.getStart())) {
+                            sorted.add(i, reunion);
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            sorted = new ArrayList<>();
+            sorted.add(reunion);
+        }
+        this.allReunions.setValue(sorted);
+    }
+
+
+
 }

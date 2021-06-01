@@ -1,9 +1,8 @@
 package com.openclassrooms.mareu.utils;
 
-import android.os.Build;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class CustomDateTimeFormatter {
@@ -12,7 +11,12 @@ public class CustomDateTimeFormatter {
         return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
     }
 
-    public String formatTimeToString(LocalDateTime dateTime) {
-        return dateTime.format(DateTimeFormatter.ISO_TIME).substring(0, 5);
+    public String formatTimeToString(LocalTime time) {
+        return time.format(DateTimeFormatter.ISO_TIME).substring(0, 5);
     }
+
+    public String formatDateTimeToString(LocalDateTime dateTime) {
+        return this.formatDateToString(dateTime.toLocalDate()) + " "+ this.formatTimeToString(dateTime.toLocalTime());
+    }
+
 }

@@ -4,7 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.AddReunionActivity">
+    tools:context=".ui.AddReunionActivity"
+    android:background="@color/teal_200">
+
+    <fragment
+        android:id="@+id/reservation_fragment"
+        android:name="com.openclassrooms.mareu.ui.ReservationFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <fragment
+        android:id="@+id/available_fragment"
+        android:name="com.openclassrooms.mareu.ui.AvailableFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/reservation_fragment" />
+
+    <TextView
+        android:id="@+id/subject_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reunion"
+        android:textStyle="bold"
+        android:layout_margin="@dimen/margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/available_fragment" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/reunion_subject_layout"
@@ -15,121 +43,16 @@
         android:layout_marginVertical="@dimen/margin_half"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/subject_title">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/reunion_subject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/reunion_subject"
-            />
+            android:hint="@string/reunion_subject" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_half"
-        android:layout_marginVertical="@dimen/margin_half"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reunion_subject_layout">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/reunion_date_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginHorizontal="@dimen/margin_half">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/reunion_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:hint="@string/date" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/reunion_start_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginHorizontal="@dimen/margin_half">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/reunion_start"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:hint="@string/start" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/reunion_end_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginHorizontal="@dimen/margin_half"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/reunion_end"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/end"
-                android:focusable="false"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/reunion_place_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin"
-        android:layout_marginVertical="@dimen/margin_half"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
-        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/reunion_place_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/place"
-            android:clickable="true"
-            android:focusable="false"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/reunion_participants_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin"
-        android:layout_marginVertical="@dimen/margin_half"
-        app:layout_constraintTop_toBottomOf="@+id/reunion_place_layout">
-
-        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/reunion_participants_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/participants"
-            android:clickable="true"
-            android:focusable="false"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/save_reunion_button"
@@ -137,9 +60,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_half"
         android:text="@string/save"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reunion_participants_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/reunion_subject_layout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.openclassrooms.mareu.ui;
 
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.entities.Reunion;
 import com.openclassrooms.mareu.events.DeleteReunionEvent;
@@ -19,7 +16,11 @@ import com.openclassrooms.mareu.utils.CustomDateTimeFormatter;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReunionRecyclerViewAdapter.ViewHolder> {
 
@@ -42,10 +43,21 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
         Reunion reunion = this.reunions.get(position);
         CustomDateTimeFormatter customDateTimeFormatter = new CustomDateTimeFormatter();
         holder.mainInformations.setText(
-                holder.itemView.getContext().getString(R.string.reunion) + " " + reunion.getSubject()
-                        + " - " + customDateTimeFormatter.formatTimeToString(reunion.getStart()) + "-" + customDateTimeFormatter.formatTimeToString(reunion.getEnd()) + " - " + reunion.getPlace().getName()
+                reunion.getSubject() + " - " + reunion.getPlace().getName()+ "\n"
+                        + customDateTimeFormatter.formatDateTimeToString(reunion.getStart()) + "\n"
+                        + customDateTimeFormatter.formatDateTimeToString(reunion.getEnd())
         );
-        Glide.with(holder.image.getContext()).applyDefaultRequestOptions(RequestOptions.circleCropTransform());
+
+        LocalDateTime now = LocalDateTime.now();
+         if(reunion.getStart().isBefore(now)) {
+             if(reunion.getEnd().isBefore(now)) {
+                 holder.image.setImageResource(R.drawable.circle_red);
+             } else if(reunion.getEnd().isAfter(now)) {
+                 holder.image.setImageResource(R.drawable.circle_orange);
+             }
+        } else if(reunion.getStart().isAfter(LocalDateTime.now())) {
+            holder.image.setImageResource(R.drawable.circle_green);
+        }
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,17 +84,18 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView image;
-        private TextView mainInformations;
-        private TextView participants;
-        private ImageView deleteButton;
+        @BindView(R.id.image)
+        ImageView image;
+        @BindView(R.id.main_informations)
+        TextView mainInformations;
+        @BindView(R.id.participants)
+        TextView participants;
+        @BindView(R.id.delete_button)
+        ImageView deleteButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.image = itemView.findViewById(R.id.image);
-            this.mainInformations = itemView.findViewById(R.id.main_informations);
-            this.participants = itemView.findViewById(R.id.participants);
-            this.deleteButton = itemView.findViewById(R.id.delete_button);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
