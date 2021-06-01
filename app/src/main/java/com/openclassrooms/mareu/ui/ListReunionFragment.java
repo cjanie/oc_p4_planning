@@ -19,9 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.api.ReunionService;
+import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reunion;
 import com.openclassrooms.mareu.events.DeleteReunionEvent;
+import com.openclassrooms.mareu.events.SearchByPlaceEvent;
 import com.openclassrooms.mareu.viewmodels.PlanningViewModel;
+import com.openclassrooms.mareu.viewmodels.SearchViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -31,6 +34,7 @@ import java.util.List;
 public class ListReunionFragment extends Fragment {
 
     private PlanningViewModel planningViewModel;
+    private SearchViewModel searchViewModel;
 
     private RecyclerView recyclerView;
 
@@ -46,6 +50,7 @@ public class ListReunionFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         this.planningViewModel = new ViewModelProvider(this).get(PlanningViewModel.class);
+        this.searchViewModel = new ViewModelProvider(this).get(SearchViewModel.class);
 
         View root = inflater.inflate(R.layout.fragment_reunion_list, container, false);
         Context context = root.getContext();
@@ -89,6 +94,13 @@ public class ListReunionFragment extends Fragment {
     @Subscribe
     public void onDeleteReunionEventFired(DeleteReunionEvent event) {
         ReunionService.getInstance().removeReunion(event.reunion);
+    }
+
+    @Subscribe
+    public void onSearchByPlaceEventFired(SearchByPlaceEvent event) {
+        List<Reunion> found = this.searchViewModel.searchReunionByPlace(event.place).getValue();
+        recyclerView.setAdapter(new ListReunionRecyclerViewAdapter(found));
+        System.out.println("Fired****************onSearchByDate");
     }
 
 

@@ -1,11 +1,14 @@
 package com.openclassrooms.mareu;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,10 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActionBar actionBar = this.getSupportActionBar(); // To call the action bar
-
-
-
         ButterKnife.bind(this);
         this.fab.setOnClickListener(this);
     }
@@ -44,8 +43,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.menu_action_bar, menu);
+        return true;
+    }
+
+    /**
+     * Menu
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_search:
+                this.navigateToSearchActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    private void navigateToSearchActivity() {
+        Intent intent = new Intent(this, SearchActivity.class);
+        this.startActivity(intent);
     }
 }

@@ -18,6 +18,7 @@ public class SearchViewModel extends ViewModel {
 
     private final MutableLiveData<List<Place>> allPlaces;
 
+
     public SearchViewModel() {
         this.allReunions = ReunionService.getInstance().getReunions();
         this.allPlaces = PlaceService.getInstance().getPlaces();

@@ -15,4 +15,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <fragment
+        android:id="@+id/filtered_reunions_recycler_view"
+        android:name="com.openclassrooms.mareu.ui.ListReunionFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_place_spinner_fragment" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
