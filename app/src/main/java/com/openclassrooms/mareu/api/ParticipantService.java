@@ -24,11 +24,6 @@ public class ParticipantService {
 
     private static ParticipantService instance;
 
-    public ParticipantService() { // public constructor for tests @Mock
-        this.participants = new MutableLiveData<>();
-        this.participants.setValue(new ArrayList<>(ParticipantService.LIST_OF_PARTICIPANTS));
-    }
-
     public static ParticipantService getInstance() {
         if(ParticipantService.instance == null) {
             ParticipantService.instance = new ParticipantService();

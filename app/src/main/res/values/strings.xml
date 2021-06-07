@@ -27,11 +27,15 @@
     <string name="error_no_reservation">Error: no reservation is done.</string>
     <string name="success">Success</string>
     <string name="search">Search</string>
+    <string name="list">List</string>
+    <string name="search_by_place">Search by place</string>
+    <string name="search_by_date">Search by date</string>
     <string name="place">Place</string>
     <string name="error_no_place_available">Error: no place available at this time.</string>
     <string name="error_no_place_selected">Error: no place is selected.</string>
     <string name="participants">Participants</string>
     <string name="participant">Participant</string>
+    <string name="error_unavailable_participants">Error: unavailable participants at this time.</string>
     <string name="available">Available</string>
     <string name="unavailable">Unavailable</string>
     <string name="error_no_participant_selected">Error: no participant selected.</string>

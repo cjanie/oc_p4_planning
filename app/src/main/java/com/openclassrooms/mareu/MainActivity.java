@@ -6,16 +6,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.openclassrooms.mareu.ui.AddReunionActivity;
-import com.openclassrooms.mareu.ui.SearchActivity;
-import com.openclassrooms.mareu.viewmodels.SearchViewModel;
+import com.openclassrooms.mareu.ui.SearchFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,12 +27,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @BindView(R.id.reunions_fab_add)
     FloatingActionButton fab;
 
+    @BindView(R.id.search_fragment)
+    View searchFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+        this.isSearchFragmentVisible(false);
         this.fab.setOnClickListener(this);
     }
 
@@ -43,8 +48,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
     /**
-     *
+     * MENU
+     * https://developer.android.com/guide/topics/ui/menus
      * @param menu
      * @return
      */
@@ -64,16 +71,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_search:
-                this.navigateToSearchActivity();
+                isSearchFragmentVisible(true);
+                return true;
+            case R.id.action_list:
+                isSearchFragmentVisible(false);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
-    private void navigateToSearchActivity() {
-        Intent intent = new Intent(this, SearchActivity.class);
-        this.startActivity(intent);
+    private void isSearchFragmentVisible(boolean isVisible) {
+        if(isVisible) {
+            this.searchFragment.setVisibility(View.VISIBLE); //  TODO with fragment layout manager?
+        } else {
+            this.searchFragment.setVisibility(View.INVISIBLE); // TODO
+        }
     }
+
 }

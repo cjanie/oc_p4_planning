@@ -63,8 +63,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
     //testImplementation 'org.junit.platform:junit-platform-runner:1.5.2'
 
-    //androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    //androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Robolectric environment to get resources
     testImplementation 'androidx.test:core:1.3.0'

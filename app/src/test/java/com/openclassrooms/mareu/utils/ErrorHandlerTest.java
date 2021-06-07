@@ -8,7 +8,7 @@ import com.openclassrooms.mareu.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.exceptions.ErrorException;
 import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullDateException;
 import com.openclassrooms.mareu.exceptions.NullEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.exceptions.NullStartTimeException;
@@ -129,7 +129,7 @@ public class ErrorHandlerTest {
     @Test
     public void getMessageOfNullDatesExceptionReturnsNoStartDateSelectedError() {
         assertEquals(this.context.getString(R.string.error_no_date_selected), this.NO_START_DATE_SELECTED);
-        assertEquals(this.NO_START_DATE_SELECTED, this.errorHandler.getMessage(new NullDatesException()));
+        assertEquals(this.NO_START_DATE_SELECTED, this.errorHandler.getMessage(new NullDateException()));
     }
 
     @DisplayName("NullEndTimeException expects message NO_END_TIME_SELECTED")

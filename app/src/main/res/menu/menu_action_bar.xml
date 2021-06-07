@@ -7,6 +7,13 @@
         android:id="@+id/action_search"
         android:icon="@drawable/ic_baseline_filter_list_24"
         android:title="@string/search"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom">
+    </item>
+    <item
+        android:id="@+id/action_list"
+        android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+        android:title="@string/list"
+        app:showAsAction="ifRoom">
+    </item>
 
 </menu>

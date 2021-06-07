@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -19,9 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.api.ReunionService;
-import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reunion;
 import com.openclassrooms.mareu.events.DeleteReunionEvent;
+import com.openclassrooms.mareu.events.InitSearchEvent;
+import com.openclassrooms.mareu.events.SearchByDateEvent;
+import com.openclassrooms.mareu.events.SearchByPlaceAndDateEvent;
 import com.openclassrooms.mareu.events.SearchByPlaceEvent;
 import com.openclassrooms.mareu.viewmodels.PlanningViewModel;
 import com.openclassrooms.mareu.viewmodels.SearchViewModel;
@@ -34,6 +35,7 @@ import java.util.List;
 public class ListReunionFragment extends Fragment {
 
     private PlanningViewModel planningViewModel;
+
     private SearchViewModel searchViewModel;
 
     private RecyclerView recyclerView;
@@ -65,6 +67,10 @@ public class ListReunionFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        this.initRecyclerView();
+    }
+
+    private void initRecyclerView() {
         if(this.getReunions() != null) {
             this.getReunions().observe(this, new Observer<List<Reunion>>() {
                 @Override
@@ -76,7 +82,6 @@ public class ListReunionFragment extends Fragment {
             });
 
         }
-
     }
 
     @Override
@@ -98,10 +103,29 @@ public class ListReunionFragment extends Fragment {
 
     @Subscribe
     public void onSearchByPlaceEventFired(SearchByPlaceEvent event) {
-        List<Reunion> found = this.searchViewModel.searchReunionByPlace(event.place).getValue();
+        List<Reunion> found = this.searchViewModel.searchReunionsByPlace(event.place).getValue();
         recyclerView.setAdapter(new ListReunionRecyclerViewAdapter(found));
-        System.out.println("Fired****************onSearchByDate");
+
     }
 
+    @Subscribe
+    public void onSearchByDateEventFired(SearchByDateEvent event) {
+        // TODO
+        List<Reunion> found = this.searchViewModel.searchReunionsByDate(event.localDate).getValue();
+        this.recyclerView.setAdapter(new ListReunionRecyclerViewAdapter(found));
+
+    }
+
+    @Subscribe
+    public void onSearchByPlaceAndDateEventFired(SearchByPlaceAndDateEvent event) {
+        System.out.println("List Reunion Fragment received Fired event **************** on Search By Place And Date");
+        List<Reunion> found = this.searchViewModel.searchReunionsByPlaceAndDate(event.place, event.date).getValue();
+        this.recyclerView.setAdapter(new ListReunionRecyclerViewAdapter(found));
+    }
+
+    @Subscribe
+    public void onInitSearchEventFired(InitSearchEvent event) {
+        this.initRecyclerView();
+    }
 
 }

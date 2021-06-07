@@ -1,17 +1,17 @@
 package com.openclassrooms.mareu.viewmodels;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.ViewModel;
 
 import com.openclassrooms.mareu.entities.Place;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+
+import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -59,7 +59,7 @@ public class SearchViewModelTest {
     @Test
     public void searchReunionsByPlaceShouldNotReturnNull() {
         Place place = this.searchViewModel.getAllPlaces().getValue().get(0);
-        assertNotNull(this.searchViewModel.searchReunionByPlace(place));
+        assertNotNull(this.searchViewModel.searchReunionsByPlace(place));
 
     }
 
@@ -67,11 +67,39 @@ public class SearchViewModelTest {
     @Test
     public void searchReunionsByPlaceShouldReturnList() {
         Place place = this.searchViewModel.getAllPlaces().getValue().get(0);
-        assertNotNull(this.searchViewModel.searchReunionByPlace(place).getValue());
-        assert(this.searchViewModel.searchReunionByPlace(place).getValue().isEmpty());
+        assertNotNull(this.searchViewModel.searchReunionsByPlace(place).getValue());
+        assert(this.searchViewModel.searchReunionsByPlace(place).getValue().isEmpty());
     }
 
+    @DisplayName("search reunions by date should not return null")
+    @Test
+    public void searchReunionsByDateShouldNotReturnNull() {
+        LocalDate date = LocalDate.now();
+        assertNotNull(this.searchViewModel.searchReunionsByDate(date));
+    }
 
+    @DisplayName("search reunions by date should return empty list at init")
+    @Test
+    public void searchReunionsByDateShouldReturnList() {
+        LocalDate date = LocalDate.now();
+        assertNotNull(this.searchViewModel.searchReunionsByDate(date).getValue());
+        assert(this.searchViewModel.searchReunionsByDate(date).getValue().isEmpty());
+    }
 
+    @DisplayName("search reunions by place and date should not return null")
+    @Test
+    public void searchReunionsByPlaceAndDateShouldNotReturnNull() {
+        Place place = this.searchViewModel.getAllPlaces().getValue().get(0);
+        LocalDate date = LocalDate.now();
+        assertNotNull(this.searchViewModel.searchReunionsByPlaceAndDate(place, date));
+    }
+
+    @DisplayName("search reunions by place and date should return empty list at init")
+    @Test
+    public void searchReunionsByPlaceAndDateShouldReturnList() {
+        Place place = this.searchViewModel.getAllPlaces().getValue().get(0);
+        LocalDate date = LocalDate.now();
+        assert(this.searchViewModel.searchReunionsByPlaceAndDate(place, date).getValue().isEmpty());
+    }
 
 }

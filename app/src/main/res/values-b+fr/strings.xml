@@ -27,11 +27,15 @@
     <string name="error_no_reservation">Erreur: aucune reservation n\'est enregistrée.</string>
     <string name="success">Succès</string>
     <string name="search">Rechercher</string>
+    <string name="list">Liste</string>
+    <string name="search_by_place">Rechercher par place</string>
+    <string name="search_by_date">Rechercher par date</string>
     <string name="place">Place</string>
     <string name="error_no_place_available">Erreur: aucune place n\'est disponible à cette heure.</string>
     <string name="error_no_place_selected">Erreur: aucune place n\'a été selectionnée.</string>
     <string name="participants">Participants</string>
     <string name="participant">Participant</string>
+    <string name="error_unavailable_participants">Participants indisponibles à cette heure.</string>
     <string name="available">Disponible</string>
     <string name="unavailable">Undisponible</string>
     <string name="error_no_participant_selected">Erreur: aucun participant n\'a été selectionné.</string>

@@ -1,16 +1,23 @@
 package com.openclassrooms.mareu.utils;
 
 import android.content.Context;
+import android.view.View;
 
+import androidx.core.content.ContextCompat;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.openclassrooms.mareu.R;
+import com.openclassrooms.mareu.exceptions.EmptyAvailableParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySelectedParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.exceptions.ErrorException;
 import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
+import com.openclassrooms.mareu.exceptions.NullParticipantsException;
 import com.openclassrooms.mareu.exceptions.NullReservationException;
 import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
-import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullDateException;
 import com.openclassrooms.mareu.exceptions.NullEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.exceptions.NullStartTimeException;
@@ -24,6 +31,16 @@ public class ErrorHandler implements ErrorInterface {
 
     public ErrorHandler(Context context) {
         this.context = context;
+    }
+
+    public void signalErrorInSnackbar(String error, View v) {
+        int colorError = ContextCompat.getColor(this.context, R.color.color_accent);
+        Snackbar.make(v, error, BaseTransientBottomBar.LENGTH_LONG).setBackgroundTint(colorError).show();
+    }
+
+    @Override
+    public String getMessage(EmptyAvailableParticipantsException e) {
+        return this.context.getString(R.string.error_unavailable_participants);
     }
 
     @Override
@@ -57,13 +74,18 @@ public class ErrorHandler implements ErrorInterface {
     }
 
     @Override
-    public String getMessage(NullDatesException e) {
+    public String getMessage(NullDateException e) {
         return this.context.getString(R.string.error_no_date_selected);
     }
 
     @Override
     public String getMessage(NullEndTimeException e) {
         return this.context.getString(R.string.error_no_end_time_selected);
+    }
+
+    @Override
+    public String getMessage(NullParticipantsException e) {
+        return e.getMessage();
     }
 
     @Override
@@ -95,4 +117,5 @@ public class ErrorHandler implements ErrorInterface {
     public String getMessage(PassedStartTimeException e) {
         return this.context.getString(R.string.error_passed_start_time);
     }
+
 }

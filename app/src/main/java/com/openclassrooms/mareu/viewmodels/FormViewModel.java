@@ -12,216 +12,126 @@ import com.openclassrooms.mareu.exceptions.EmptySelectedParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullReservationException;
-import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 import com.openclassrooms.mareu.exceptions.NullPlaceException;
-import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullReservationException;
+import com.openclassrooms.mareu.exceptions.PassedStartDateException;
+import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
+import com.openclassrooms.mareu.exceptions.NullDateException;
 import com.openclassrooms.mareu.exceptions.NullEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullStartTimeException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
-import com.openclassrooms.mareu.exceptions.PassedStartDateException;
 import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FormViewModel extends ViewModel {
 
-    // Has a PlanningViewModel property
     private final PlanningViewModel planningViewModel;
 
-    // Data that are needed to create one object of class Reunion
-    private final MutableLiveData<String> subject;
 
-
+    // Data to create Reunion
     private final MutableLiveData<LocalDateTime> start;
 
     private final MutableLiveData<LocalDateTime> end;
 
-    private final MutableLiveData<Reservation> reservation;
-
-    private final MutableLiveData<List<Place>> availablePlaces;
-
     private final MutableLiveData<Place> place;
 
-    private final MutableLiveData<List<Participant>> allParticipants;
+    private final MutableLiveData<List<Participant>> participants;
 
-    private final MutableLiveData<List<Participant>> selectedParticipants;
-
-    private final MutableLiveData<List<Participant>> availableParticipants;
+    private final MutableLiveData<String> subject;
 
 
     public FormViewModel() {
-
         this.planningViewModel = new PlanningViewModel();
 
-        this.subject = new MutableLiveData<>("Réu");
-        this.start = new MutableLiveData<>();
-        this.end = new MutableLiveData<>();
-        this.reservation = new MutableLiveData<>();
-        this.availablePlaces = new MutableLiveData<>(new ArrayList<>());
+        // Default start now - TODO: start when next reservation is available
+        this.start = new MutableLiveData<>(LocalDateTime.now());
+        this.end = new MutableLiveData<>(this.start.getValue().plusHours(1));
         this.place = new MutableLiveData<>();
-        this.allParticipants = new MutableLiveData<>(new ArrayList<>());
-        this.selectedParticipants = new MutableLiveData<>(new ArrayList<>());
-        this.availableParticipants = new MutableLiveData<>(new ArrayList<>());
-
-        this.initDefaultStartEnd();
-        this.loadAllParticipants();
+        this.participants = new MutableLiveData<>(new ArrayList<>());
+        this.subject = new MutableLiveData<>("Réu"); // TODO: ""
     }
 
-    private void initDefaultStartEnd() {
-        this.start.setValue(LocalDateTime.now()); // Default start now - TODO: start when next reservation is available
-        this.end.setValue(this.start.getValue().plusHours(1));
-    }
-
-    private void loadAllParticipants() {
-        LiveData<List<Participant>> liveData = this.planningViewModel.getAllParticipants();
-        this.allParticipants.setValue(liveData.getValue());
-    }
-
-    /**
-     * Called in onCreate of activity
-     * Then in onReserve button action
-     * @throws InvalidEndTimeException
-     * @throws PassedStartTimeException
-     * @throws PassedStartDateException
-     * @throws InvalidEndDateException
-     * @throws PassedDatesException
-     * @throws NullEndTimeException
-     * @throws NullDatesException
-     * @throws NullStartTimeException
-     */
-    public void makeReservationThenLoadAvailablePlaces() throws InvalidEndTimeException, PassedStartTimeException, PassedDatesException, NullEndTimeException, NullDatesException, NullStartTimeException, NullReservationException {
-        this.setReservation();
-        this.loadAvailablePlaces(); // Available places are depending of reservation value
-    }
-
-    public void setReservation() throws PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
-        this.reservation.setValue(new Reservation(this.start.getValue(), this.end.getValue()));
-    }
-
-    public void makeReservationThenLoadAvailableParticipants() throws PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, NullReservationException {
-        this.setReservation();
-        this.loadAvailableParticipants(); // Available participants are depending of reservation value
-    }
-
-    public LiveData<Reservation> getReservation() {
-        return this.reservation;
-    }
-
-    private void loadAvailablePlaces() throws NullReservationException {
-        if(this.reservation.getValue() == null) {
-            throw new NullReservationException();
-        } else {
-            this.availablePlaces.setValue(this.planningViewModel.getAvailablePlaces(this.reservation.getValue()).getValue());
-        }
-    }
-
-    public LiveData<List<Place>> getAvailablePlaces() throws NullReservationException {
-        this.loadAvailablePlaces();
-        return this.availablePlaces;
-    }
-
-    private void loadAvailableParticipants() throws NullReservationException {
-        if(this.reservation.getValue() == null) {
-            throw new NullReservationException();
-        } else {
-            this.availableParticipants.setValue(this.planningViewModel.getAvailableParticipants(this.reservation.getValue()).getValue());
-            this.setDefaultSelectedParticipants();
-        }
-    }
-
-    private void setDefaultSelectedParticipants() {
-        List<Participant> defaultSelected = new ArrayList<>();
-        if(!this.availableParticipants.getValue().isEmpty()) {
-            defaultSelected.add(this.availableParticipants.getValue().get(0));
-            if(this.availableParticipants.getValue().size() > 1) {
-                defaultSelected.add(this.availableParticipants.getValue().get(1));
-            }
-        }
-
-        this.selectedParticipants.setValue(defaultSelected);
-    }
-
-    public LiveData<List<Participant>> getAvailableParticipants() throws NullReservationException {
-        this.loadAvailableParticipants();
-        return this.availableParticipants;
-    }
-    public LiveData<String> getSubject() {
-        return this.subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject.setValue(subject);
-    }
-
+    // GETTERS & SETTERS START
     public LiveData<LocalDateTime> getStart() {
         return this.start;
     }
 
-    public void setStart(LocalDateTime dateTime) throws PassedStartDateException, InvalidEndDateException {
-        if(dateTime.isBefore(LocalDateTime.now())) {
-            throw new PassedStartDateException();
+    public void setStart(LocalDateTime dateTime) throws PassedStartDateException, NullDateException, PassedStartTimeException {
+        LocalDateTime now = LocalDateTime.now();
+        if(dateTime == null) {
+            throw new NullDateException();
+        } else if(dateTime.isBefore(now)) {
+            if(dateTime.toLocalDate().isBefore(now.toLocalDate())) {
+                throw new PassedStartDateException();
+            } else if(dateTime.toLocalTime().isBefore(now.toLocalTime())) {
+                throw new PassedStartTimeException();
+            }
         } else {
             this.start.setValue(dateTime);
             this.end.setValue(this.start.getValue().plusHours(1));
         }
     }
 
+    // GETTERS & SETTERS END
     public LiveData<LocalDateTime> getEnd() {
         return this.end;
     }
 
-    public void setEnd(LocalDateTime dateTime) throws InvalidEndDateException {
-        if(dateTime.isBefore(LocalDateTime.now()) || dateTime.isBefore(this.start.getValue())) {
+    public void setEnd(LocalDateTime dateTime) throws InvalidEndDateException, NullDateException {
+        if(dateTime == null) {
+            throw new NullDateException();
+        } else if(dateTime.isBefore(LocalDateTime.now()) || dateTime.isBefore(this.start.getValue())) {
             throw new InvalidEndDateException();
         } else {
             this.end.setValue(dateTime);
         }
     }
 
+    // GETTERS & SETTERS PLACE
+    public void setPlace(Place place)  {
+        this.place.setValue(place);
+
+    }
 
     public LiveData<Place> getPlace() {
         return this.place;
     }
 
-    public void setPlace(Place place) {
-        this.place.setValue(place);
+    public void setParticipants(List<Participant> participants) {
+        this.participants.setValue(participants);
     }
 
-    public LiveData<List<Participant>> getAllParticipants() {
-        return this.allParticipants;
+    public LiveData<List<Participant>> getParticipants() {
+        return this.participants;
     }
 
-    public LiveData<List<Participant>> getSelectedParticipants() {
-        return this.selectedParticipants;
+    public void setSubject(String subject) {
+        this.subject.setValue(subject);
     }
 
-    public void setSelectedParticipants(List<Participant> participants) {
-        this.selectedParticipants.setValue(participants);
+    public LiveData<String> getSubject() {
+        return this.subject;
     }
 
-    private Reunion createReunion() throws
-            PassedDatesException,
-            InvalidEndTimeException,
-            NullDatesException,
-            NullStartTimeException,
-            NullEndTimeException,
-            PassedStartTimeException,
+
+    public Reunion createReunion() throws // public for test
+
             EmptySubjectException,
             EmptySelectedParticipantsException,
-            UnavailablePlacesException, NullPlaceException {
 
-        if(this.start.getValue() == null) {
-            throw new NullDatesException();
-        }
+            PassedDatesException, InvalidEndTimeException, NullDateException,
+            NullStartTimeException, NullEndTimeException, PassedStartTimeException, NullPlaceException, UnavailablePlacesException, NullReservationException {
 
-        if(this.end.getValue() == null) {
-            throw new NullDatesException();
-        }
         // Instantiate the new Reunion
-        Reunion reunion = new Reunion(this.reservation.getValue().getStart(), this.reservation.getValue().getEnd());
+
+        Reunion reunion = new Reunion(
+                this.start.getValue(),
+                    this.end.getValue());
+
         if(this.subject.getValue().isEmpty()) {
             throw new EmptySubjectException();
         } else {
@@ -229,28 +139,34 @@ public class FormViewModel extends ViewModel {
         }
 
         if(this.place.getValue() == null) {
-            throw new UnavailablePlacesException();
-        } else {
-            reunion.setPlace(this.place.getValue());
+            if(this.planningViewModel.getAvailablePlaces(reunion).getValue().isEmpty()) {
+                throw new UnavailablePlacesException();
+            } else {
+                reunion.setPlace(this.planningViewModel.getAvailablePlaces(reunion).getValue().get(0));
+                reunion.getPlace().reserve(new Reservation(
+                        this.start.getValue(),
+                        this.end.getValue()));
+            }
         }
-
-
-        if(this.selectedParticipants.getValue().isEmpty()) {
+        
+        if(this.participants.getValue().isEmpty()) {
             throw new EmptySelectedParticipantsException();
         } else {
-            for(Participant participant: this.selectedParticipants.getValue()) {
-                //participant.assign(reunion);
-                participant.getReservations().add(this.reservation.getValue());
+            reunion.setParticipants(this.participants.getValue());
+            for(Participant participant: this.participants.getValue()) {
+                participant.assign(reunion);
+                //participant.getReservations().add(this.reservation.getValue());
             }
-            reunion.setParticipants(this.selectedParticipants.getValue());
         }
+
         return reunion;
     }
 
-    public void saveReunion() throws NullPlaceException, NullStartTimeException, EmptySelectedParticipantsException, PassedStartTimeException, NullEndTimeException, PassedDatesException, InvalidEndTimeException, EmptySubjectException, NullDatesException, UnavailablePlacesException {
-        this.planningViewModel.saveReunion(this.createReunion());
-        this.planningViewModel.reservePlace(this.place.getValue(), this.reservation.getValue());
+    public void addReunion() throws NullPlaceException, NullDateException, PassedStartTimeException, UnavailablePlacesException, NullStartTimeException, EmptySubjectException, NullEndTimeException, PassedDatesException, EmptySelectedParticipantsException, InvalidEndTimeException, NullReservationException {
 
+            this.planningViewModel.addReunion(this.createReunion());
+
+            //this.planningViewModel.reservePlace(this.place.getValue(), this.reservation.getValue());
     }
 
 

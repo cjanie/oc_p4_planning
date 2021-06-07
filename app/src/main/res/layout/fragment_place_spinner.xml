@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="false"
-            android:hint="@string/place" />
+            android:hint="@string/search_by_place" />
     </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

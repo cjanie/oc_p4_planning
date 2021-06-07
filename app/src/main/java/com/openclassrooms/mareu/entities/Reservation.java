@@ -1,7 +1,7 @@
 package com.openclassrooms.mareu.entities;
 
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullDateException;
 import com.openclassrooms.mareu.exceptions.NullEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullStartTimeException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
@@ -15,14 +15,14 @@ public class Reservation {
     private LocalDateTime end;
 
     public Reservation(LocalDateTime start, LocalDateTime end)
-            throws NullDatesException, NullStartTimeException, NullEndTimeException,
+            throws NullDateException, NullStartTimeException, NullEndTimeException,
             PassedDatesException, PassedStartTimeException, InvalidEndTimeException {
 
         LocalDateTime now = LocalDateTime.now().minusMinutes(1); // now minus 1 minute to make instantaneous reservation possible
 
 
         if(start == null && end == null) { // case both dates null
-            throw new NullDatesException();
+            throw new NullDateException();
         } else if(start == null) { // case start null
             throw new NullStartTimeException();
         } else if(end == null) { // case end null
