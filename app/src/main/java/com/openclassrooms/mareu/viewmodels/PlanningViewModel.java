@@ -93,7 +93,7 @@ public class PlanningViewModel extends ViewModel {
         if(reservation == null) {
             throw new NullReservationException();
         } else {
-            List<Participant> listOfAllParticipants = this.allParticipants.getValue(); // Get the data that has to be filtered
+            List<Participant> listOfAllParticipants = this.participantService.getParticipants().getValue(); // Get the data that has to be filtered
             if(listOfAllParticipants != null && !listOfAllParticipants.isEmpty()) {
                 List<Participant> listOfAvailableParticipants = new ArrayList<>(); // Instantiate the list that will receive filtered data
                 for(Participant participant: listOfAllParticipants) {

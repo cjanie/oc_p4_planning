@@ -21,7 +21,7 @@ public class ParticipantServiceTest {
 
     @Before
     public void setUp() {
-        this.participantService = ParticipantService.getNewInstance();
+        this.participantService = ParticipantService.getInstance();
         this.availableParticipants = this.participantService.getParticipants().getValue();
 
     }

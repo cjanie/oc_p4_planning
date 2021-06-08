@@ -4,10 +4,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.openclassrooms.mareu.api.PlaceService;
+import com.openclassrooms.mareu.api.ReunionService;
 import com.openclassrooms.mareu.entities.Participant;
 import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reservation;
 import com.openclassrooms.mareu.entities.Reunion;
+import com.openclassrooms.mareu.exceptions.EmptyAvailableParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySelectedParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
@@ -29,7 +32,7 @@ import java.util.List;
 
 public class FormViewModel extends ViewModel {
 
-    private final PlanningViewModel planningViewModel;
+
 
 
     // Data to create Reunion
@@ -45,8 +48,6 @@ public class FormViewModel extends ViewModel {
 
 
     public FormViewModel() {
-        this.planningViewModel = new PlanningViewModel();
-
         // Default start now - TODO: start when next reservation is available
         this.start = new MutableLiveData<>(LocalDateTime.now());
         this.end = new MutableLiveData<>(this.start.getValue().plusHours(1));
@@ -124,7 +125,7 @@ public class FormViewModel extends ViewModel {
             EmptySelectedParticipantsException,
 
             PassedDatesException, InvalidEndTimeException, NullDateException,
-            NullStartTimeException, NullEndTimeException, PassedStartTimeException, NullPlaceException, UnavailablePlacesException, NullReservationException {
+            NullStartTimeException, NullEndTimeException, PassedStartTimeException, NullPlaceException, UnavailablePlacesException, NullReservationException, EmptyAvailableParticipantsException {
 
         // Instantiate the new Reunion
 
@@ -139,33 +140,36 @@ public class FormViewModel extends ViewModel {
         }
 
         if(this.place.getValue() == null) {
-            if(this.planningViewModel.getAvailablePlaces(reunion).getValue().isEmpty()) {
-                throw new UnavailablePlacesException();
+            throw new UnavailablePlacesException();
             } else {
-                reunion.setPlace(this.planningViewModel.getAvailablePlaces(reunion).getValue().get(0));
-                reunion.getPlace().reserve(new Reservation(
-                        this.start.getValue(),
-                        this.end.getValue()));
-            }
+            reunion.setPlace(this.place.getValue());
+            reunion.getPlace().reserve(new Reservation(
+                this.start.getValue(),
+                this.end.getValue()));
+            System.out.println(reunion.getPlace().getName() + "is reserved up to " + this.end.getValue().toString());
         }
-        
-        if(this.participants.getValue().isEmpty()) {
-            throw new EmptySelectedParticipantsException();
-        } else {
-            reunion.setParticipants(this.participants.getValue());
-            for(Participant participant: this.participants.getValue()) {
-                participant.assign(reunion);
-                //participant.getReservations().add(this.reservation.getValue());
+
+
+            if(this.participants.getValue().isEmpty()) {
+                    throw new EmptyAvailableParticipantsException();
+                } else {
+                reunion.setParticipants(this.participants.getValue());
+                for(Participant participant: this.participants.getValue()) { // TODO
+                    participant.assign(reunion);
+                    //participant.getReservations().add(this.reservation.getValue());
+                }
             }
-        }
+
+
+
 
         return reunion;
     }
 
-    public void addReunion() throws NullPlaceException, NullDateException, PassedStartTimeException, UnavailablePlacesException, NullStartTimeException, EmptySubjectException, NullEndTimeException, PassedDatesException, EmptySelectedParticipantsException, InvalidEndTimeException, NullReservationException {
+    public void addReunion() throws NullPlaceException, NullDateException, PassedStartTimeException, UnavailablePlacesException, NullStartTimeException, EmptySubjectException, NullEndTimeException, PassedDatesException, EmptySelectedParticipantsException, InvalidEndTimeException, NullReservationException, EmptyAvailableParticipantsException {
 
-            this.planningViewModel.addReunion(this.createReunion());
-
+        //this.planningViewModel.addReunion(this.createReunion());
+        //ReunionService.getInstance().addReunion(this.createReunion());
             //this.planningViewModel.reservePlace(this.place.getValue(), this.reservation.getValue());
     }
 

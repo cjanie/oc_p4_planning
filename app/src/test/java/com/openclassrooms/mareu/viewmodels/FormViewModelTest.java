@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.openclassrooms.mareu.entities.Participant;
 import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reunion;
+import com.openclassrooms.mareu.exceptions.EmptyAvailableParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySelectedParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
@@ -204,7 +205,7 @@ public class FormViewModelTest {
     // CREATE REUNION
     @DisplayName("create reunion with success")
     @Test
-    public void createReunionSucceeds() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, PassedStartDateException, InvalidEndDateException, NullPlaceException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, NullParticipantsException {
+    public void createReunionSucceeds() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, PassedStartDateException, InvalidEndDateException, NullPlaceException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, NullParticipantsException, EmptyAvailableParticipantsException {
         Reunion reunion = this.generateReunion();
         this.formViewModel.setStart(reunion.getStart());
         this.formViewModel.setEnd(reunion.getEnd());
@@ -218,7 +219,7 @@ public class FormViewModelTest {
 
     @DisplayName("create reunion throws empty subject exception")
     @Test(expected = EmptySubjectException.class)
-    public void buildReunionFailWhenSubjectIsEmptyShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException {
+    public void buildReunionFailWhenSubjectIsEmptyShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException, EmptyAvailableParticipantsException {
         Reunion reunion = this.generateReunion();
         reunion.setSubject("");
 
@@ -232,7 +233,7 @@ public class FormViewModelTest {
 
     @DisplayName("create reunion throws null place exception")
     @Test(expected = NullPlaceException.class)
-    public void createReunionWithPlaceAsNullShouldThrowException() throws PassedDatesException, InvalidEndTimeException, PassedStartTimeException, NullStartTimeException, NullEndTimeException, NullDateException, PassedStartDateException, InvalidEndDateException, UnavailablePlacesException, NullPlaceException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException {
+    public void createReunionWithPlaceAsNullShouldThrowException() throws PassedDatesException, InvalidEndTimeException, PassedStartTimeException, NullStartTimeException, NullEndTimeException, NullDateException, PassedStartDateException, InvalidEndDateException, UnavailablePlacesException, NullPlaceException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, EmptyAvailableParticipantsException {
         Reunion reunion = this.generateReunion();
         reunion.setPlace(null);
 

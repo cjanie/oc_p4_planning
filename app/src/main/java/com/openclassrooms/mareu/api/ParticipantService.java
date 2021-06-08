@@ -24,15 +24,15 @@ public class ParticipantService {
 
     private static ParticipantService instance;
 
+    private ParticipantService() {
+        this.participants = new MutableLiveData<>(ParticipantService.LIST_OF_PARTICIPANTS);
+    }
+
     public static ParticipantService getInstance() {
         if(ParticipantService.instance == null) {
             ParticipantService.instance = new ParticipantService();
         }
         return ParticipantService.instance;
-    }
-
-    public static ParticipantService getNewInstance() {
-        return new ParticipantService();
     }
 
     public MutableLiveData<List<Participant>> getParticipants() {
