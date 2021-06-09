@@ -1,94 +1,86 @@
 package com.openclassrooms.mareu.entities;
 
-import com.openclassrooms.mareu.exceptions.NullDateException;
-import com.openclassrooms.mareu.exceptions.NullEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.DELAY;
+import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndException;
+import com.openclassrooms.mareu.exceptions.NullStartException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
-import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
+import com.openclassrooms.mareu.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.exceptions.PassedStartException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertNotNull;
 
-
+/**
+ * Reservation constructor tests
+ * Exceptions
+ */
 public class ReservationTest {
 
+    // Parameters for constructor of Reservation
     private LocalDateTime start;
+
     private LocalDateTime end;
 
-    // private methode to use the Reservation constructor
-    private Reservation makeReservation() throws PassedStartTimeException, InvalidEndTimeException, PassedDatesException, NullStartTimeException, NullDateException, NullEndTimeException {
-        return new Reservation(this.start, this.end);
+
+    @Before
+    public void setUp() { // Instantiate default start and end for a reunion starting now
+        this.start = LocalDateTime.now();
+        this.end = this.start.plusMinutes(DELAY.REUNION_DURATION.getMinutes());
     }
 
-    // Test constructor success
-    @Test
-    public void makeReservationWithSuccess() throws PassedStartTimeException, PassedDatesException, InvalidEndTimeException, NullStartTimeException, NullDateException, NullEndTimeException {
-        this.start = LocalDateTime.now().plusMinutes(15);
-        this.end = start.plusMinutes(60);
-        Reservation reservation = makeReservation();
-        assertNotNull(reservation);
-    }
 
     @Test
-    public void makeReservationStartingNowWithSuccess() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
-        this.start = LocalDateTime.now(); // TODO: test doesn't pass alone
-        this.end = start.plusMinutes(10);
-        this.makeReservation();
+    public void constructorSucceed() throws PassedStartException, PassedDatesException, InvalidEndException, NullStartException, NullDatesException, NullEndException {
+        assertNotNull(new Reservation(this.start, this.end));
+        assertNotNull(new Reservation(this.start.plusMinutes(15), this.end.plusMinutes(20)));
     }
 
     // Test that exceptions are thrown
-    @Test(expected = NullDateException.class)
-    public void makeReservationWithNullDatesShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
-        this.start = null;
-        this.end = null;
-        this.makeReservation();
+    @Test(expected = NullDatesException.class)
+    public void reservationWithNullDatesShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
+        new Reservation(null, null);
     }
 
-    @Test(expected = NullStartTimeException.class)
-    public void makeReservationWithNullStartTimeShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
-        this.start = null;
-        this.end = LocalDateTime.now().minusHours(2);
-        this.makeReservation();
+    @Test(expected = NullStartException.class)
+    public void reservationWithNullStartShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
+        new Reservation(null, this.end);
     }
 
-    @Test(expected = NullEndTimeException.class)
-    public void makeReservationWithNullEndTimeShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
-        this.start = LocalDateTime.now().plusMinutes(10);
-        this.end = null;
-        this.makeReservation();
+    @Test(expected = NullEndException.class)
+    public void reservationWithNullEndShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
+        new Reservation(this.start, null);
     }
 
     @Test(expected = PassedDatesException.class)
-    public void makeReservationWithPassedDatesShouldThrowException() throws PassedStartTimeException, InvalidEndTimeException, PassedDatesException, NullStartTimeException, NullDateException, NullEndTimeException {
-        this.start = LocalDateTime.now().minusHours(3);
-        this.end = start.plusMinutes(50);
-        this.makeReservation();
+    public void reservationWithPassedDatesShouldThrowException() throws PassedStartException, InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException {
+        new Reservation(this.start.minusHours(3), this.start.minusHours(2));
     }
 
-    @Test(expected = PassedStartTimeException.class)
-    public void makeReservationWithPassedStartTimeShouldThrowException() throws PassedStartTimeException, InvalidEndTimeException, PassedDatesException, NullStartTimeException, NullDateException, NullEndTimeException {
-        this.start = LocalDateTime.now().minusHours(3);
-        this.end = LocalDateTime.now().plusMinutes(15);
-        this.makeReservation();
+    @Test(expected = PassedStartException.class)
+    public void reservationWithPassedStartShouldThrowException() throws PassedStartException, InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException {
+        new Reservation(this.start.minusMinutes(1), this.end);
 
     }
 
-    @Test(expected = InvalidEndTimeException.class)
-    public void makeReservationWithInvalidEndTimeShouldThrowException() throws PassedStartTimeException, PassedDatesException, InvalidEndTimeException, NullStartTimeException, NullDateException, NullEndTimeException {
-        this.start = LocalDateTime.now().plusMinutes(15);
-        this.end = start.minusHours(3);
-        this.makeReservation();
+    @Test(expected = InvalidEndException.class)
+    public void reservationWithInvalidEndShouldThrowException() throws PassedStartException, PassedDatesException, InvalidEndException, NullStartException, NullDatesException, NullEndException {
+        new Reservation(this.start.plusHours(2), this.start.plusHours(1));
     }
 
 
-    @Test (expected = InvalidEndTimeException.class)
-    public void makeReservationStartingNowWithInvalidEndTimeShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
-        this.start = LocalDateTime.now();
-        this.end = start.minusHours(3);
-        this.makeReservation();
+    @Test(expected = InvalidEndException.class)
+    public void reservationNowWithInvalidEndShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
+        new Reservation(this.start, this.start.minusHours(1));
+    }
+
+    @Test(expected = InvalidEndException.class)
+    public void reservationAsPassedWithInvalidEndShouldThrowException() throws InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException, PassedStartException {
+        new Reservation(this.start.minusMinutes(10), this.start.minusMinutes(20));
     }
 }

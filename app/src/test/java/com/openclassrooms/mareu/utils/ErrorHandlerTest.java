@@ -7,14 +7,14 @@ import com.openclassrooms.mareu.exceptions.EmptySelectedParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.exceptions.ErrorException;
 import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
-import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullDateException;
-import com.openclassrooms.mareu.exceptions.NullEndTimeException;
+import com.openclassrooms.mareu.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndException;
 import com.openclassrooms.mareu.exceptions.NullPlaceException;
-import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.exceptions.NullStartException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.exceptions.PassedStartDateException;
-import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
+import com.openclassrooms.mareu.exceptions.PassedStartException;
 import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 
 import org.junit.After;
@@ -122,21 +122,21 @@ public class ErrorHandlerTest {
     @Test
     public void getMessageOfInvalidEnTimeExceptionReturnsInvalidEndTimeError() {
         assertEquals(this.context.getString(R.string.error_invalid_end_time), this.INVALID_END_TIME);
-        assertEquals(this.INVALID_END_TIME, this.errorHandler.getMessage(new InvalidEndTimeException()));
+        assertEquals(this.INVALID_END_TIME, this.errorHandler.getMessage(new InvalidEndException()));
     }
 
     @DisplayName("NullDatesException expects message NO_START_DATE_SELECTED")
     @Test
     public void getMessageOfNullDatesExceptionReturnsNoStartDateSelectedError() {
         assertEquals(this.context.getString(R.string.error_no_date_selected), this.NO_START_DATE_SELECTED);
-        assertEquals(this.NO_START_DATE_SELECTED, this.errorHandler.getMessage(new NullDateException()));
+        assertEquals(this.NO_START_DATE_SELECTED, this.errorHandler.getMessage(new NullDatesException()));
     }
 
     @DisplayName("NullEndTimeException expects message NO_END_TIME_SELECTED")
     @Test
     public void getMessageOfNullEndTimeExceptionReturnsNoEndTimeSelectedError() {
         assertEquals(this.context.getString(R.string.error_no_end_time_selected), this.NO_END_TIME_SELECTED);
-        assertEquals(this.NO_END_TIME_SELECTED, this.errorHandler.getMessage(new NullEndTimeException()));
+        assertEquals(this.NO_END_TIME_SELECTED, this.errorHandler.getMessage(new NullEndException()));
     }
 
     @DisplayName("NullPlaceException expects message NO_PLACE_SELECTED")
@@ -150,7 +150,7 @@ public class ErrorHandlerTest {
     @Test
     public void getMessageOfNullStartTimeExceptionReturnsNoStartTimeSelectedError() {
         assertEquals(this.context.getString(R.string.error_no_start_time_selected), this.NO_START_TIME_SELECTED);
-        assertEquals(this.NO_START_TIME_SELECTED, this.errorHandler.getMessage(new NullStartTimeException()));
+        assertEquals(this.NO_START_TIME_SELECTED, this.errorHandler.getMessage(new NullStartException()));
     }
 
     @DisplayName("PassedDatesException expects error message PASSED_START_DATE")
@@ -171,7 +171,7 @@ public class ErrorHandlerTest {
     @Test
     public void getMessageOfPassedStartTimeExceptionReturnsPassedStartTimeError() {
         assertEquals(this.context.getString(R.string.error_passed_start_time), this.PASSED_START_TIME);
-        assertEquals(this.PASSED_START_TIME, this.errorHandler.getMessage(new PassedStartTimeException()));
+        assertEquals(this.PASSED_START_TIME, this.errorHandler.getMessage(new PassedStartException()));
     }
 
     @DisplayName("UnavailablePlacesException expects error message NO_PLACE_AVAILABLE")

@@ -4,19 +4,25 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.openclassrooms.mareu.DELAY;
 import com.openclassrooms.mareu.api.ParticipantService;
 import com.openclassrooms.mareu.api.PlaceService;
 import com.openclassrooms.mareu.api.ReunionService;
-import com.openclassrooms.mareu.entities.HasPlanning;
 import com.openclassrooms.mareu.entities.Participant;
 import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reservation;
 import com.openclassrooms.mareu.entities.Reunion;
 import com.openclassrooms.mareu.exceptions.EmptyAvailableParticipantsException;
+import com.openclassrooms.mareu.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndException;
 import com.openclassrooms.mareu.exceptions.NullReservationException;
+import com.openclassrooms.mareu.exceptions.NullReunionException;
+import com.openclassrooms.mareu.exceptions.NullStartException;
+import com.openclassrooms.mareu.exceptions.PassedDatesException;
+import com.openclassrooms.mareu.exceptions.PassedStartException;
 import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,37 +128,73 @@ public class PlanningViewModel extends ViewModel {
         return this.allReunions;
     }
 
-    public void addReunion(Reunion reunion) {
+    public void addReunion(Reunion reunion) throws NullReunionException {
         this.addToPlanningRespectingAscendantOrderOfTime(reunion);
         ReunionService.getInstance().saveReunions(this.allReunions.getValue());
     }
 
-    private void addToPlanningRespectingAscendantOrderOfTime(Reunion reunion) {
-        List<Reunion> sorted = this.allReunions.getValue();
-        if(sorted != null) {
+    private void addToPlanningRespectingAscendantOrderOfTime(Reunion reunion) throws NullReunionException {
+        if(reunion == null) {
+            throw new NullReunionException();
+        } else {
+
+            List<Reunion> sorted = this.allReunions.getValue();
+
             if(sorted.isEmpty()) {
                 sorted.add(reunion);
             } else { // to make a sorted list of reservations
+
                 LocalDateTime earlierStart = sorted.get(0).getStart();
                 LocalDateTime latestStart = sorted.get(sorted.size() - 1).getStart();
-                if(reunion.getStart().isAfter(latestStart)) {
+
+                if(reunion.getStart().isEqual(latestStart) || reunion.getStart().isAfter(latestStart)) {
                     sorted.add(reunion);
                 } else if(reunion.getStart().isBefore(earlierStart)) {
                     sorted.add(0, reunion);
                 } else {
                     for(int i = 0; i<sorted.size(); i++) {
-                        if(sorted.get(i).getStart().isAfter(reunion.getStart())) {
+                        if(sorted.get(i).getStart().isEqual(reunion.getStart()) || sorted.get(i).getStart().isAfter(reunion.getStart())) {
                             sorted.add(i, reunion);
                             break;
                         }
                     }
                 }
             }
-        } else {
-            sorted = new ArrayList<>();
-            sorted.add(reunion);
+
+
+
+            this.allReunions.setValue(sorted);
         }
-        this.allReunions.setValue(sorted);
+    }
+
+    public Reservation getNextAvailableReservation(Reservation currentReservation) throws NullReservationException, PassedDatesException, InvalidEndException, PassedStartException, NullStartException, NullEndException, NullDatesException {
+
+        Reservation nextReservation = null;
+        try {
+            this.getAvailablePlaces(currentReservation).getValue();
+        } catch (UnavailablePlacesException e) {
+            e.printStackTrace();
+            // create Reservation: next available
+            List<Reservation> currentReservations = new ArrayList<>();
+
+            for(Place place: this.getAllPlaces().getValue()) {
+                currentReservations.add(place.getReservations().get(0));
+            };
+            List<LocalDateTime> endOfCurrentReservations = new ArrayList<>();
+            endOfCurrentReservations.add(currentReservations.get(0).getEnd());
+            for(int i=1; i<currentReservations.size(); i++) {
+                if(currentReservations.get(i).getEnd().isEqual(endOfCurrentReservations.get(0))
+                        || currentReservations.get(i).getEnd().isAfter(endOfCurrentReservations.get(0))) {
+                    endOfCurrentReservations.add(currentReservations.get(i).getEnd());
+                } else {
+                    endOfCurrentReservations.add(0, currentReservations.get(i).getEnd());
+                }
+            }
+            LocalDateTime nextStart = endOfCurrentReservations.get(0).plusMinutes(DELAY.SHORT.getMinutes()); // Delay to avoid unavailable places exception
+            LocalDateTime nextEnd = nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes());
+            nextReservation = new Reservation(nextStart, nextEnd);
+        }
+        return nextReservation;
     }
 
 

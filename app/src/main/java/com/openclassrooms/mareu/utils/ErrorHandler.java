@@ -13,17 +13,20 @@ import com.openclassrooms.mareu.exceptions.EmptySelectedParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.exceptions.ErrorException;
 import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
+import com.openclassrooms.mareu.exceptions.InvalidEndException;
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
 import com.openclassrooms.mareu.exceptions.NullParticipantsException;
 import com.openclassrooms.mareu.exceptions.NullReservationException;
+import com.openclassrooms.mareu.exceptions.NullReunionException;
+import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
 import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
-import com.openclassrooms.mareu.exceptions.NullDateException;
-import com.openclassrooms.mareu.exceptions.NullEndTimeException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndException;
 import com.openclassrooms.mareu.exceptions.NullPlaceException;
-import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.exceptions.NullStartException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.exceptions.PassedStartDateException;
-import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
+import com.openclassrooms.mareu.exceptions.PassedStartException;
 
 public class ErrorHandler implements ErrorInterface {
 
@@ -64,6 +67,11 @@ public class ErrorHandler implements ErrorInterface {
     }
 
     @Override
+    public String getMessage(InvalidEndException e) {
+        return this.context.getString(R.string.error_invalid_end_date) + " / " +this.context.getString(R.string.error_invalid_end_time);
+    }
+
+    @Override
     public String getMessage(InvalidEndTimeException e) {
         return this.context.getString(R.string.error_invalid_end_time);
     }
@@ -74,12 +82,12 @@ public class ErrorHandler implements ErrorInterface {
     }
 
     @Override
-    public String getMessage(NullDateException e) {
+    public String getMessage(NullDatesException e) {
         return this.context.getString(R.string.error_no_date_selected);
     }
 
     @Override
-    public String getMessage(NullEndTimeException e) {
+    public String getMessage(NullEndException e) {
         return this.context.getString(R.string.error_no_end_time_selected);
     }
 
@@ -99,18 +107,28 @@ public class ErrorHandler implements ErrorInterface {
     }
 
     @Override
-    public String getMessage(NullStartTimeException e) {
+    public String getMessage(NullReunionException e) {
+        return this.context.getString(R.string.error_null_reunion);
+    }
+
+    @Override
+    public String getMessage(NullStartException e) {
         return this.context.getString(R.string.error_no_start_time_selected);
     }
 
     @Override
     public String getMessage(PassedDatesException e) {
-        return this.context.getString(R.string.error_passed_start_date);
+        return this.context.getString(R.string.error_passed_dates);
     }
 
     @Override
     public String getMessage(PassedStartDateException e) {
         return this.context.getString(R.string.error_passed_start_date);
+    }
+
+    @Override
+    public String getMessage(PassedStartException e) {
+        return this.context.getString(R.string.error_passed_start_date) + " / " + this.context.getString(R.string.error_passed_start_time);
     }
 
     @Override

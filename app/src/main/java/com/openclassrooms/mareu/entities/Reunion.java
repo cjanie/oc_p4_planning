@@ -1,11 +1,11 @@
 package com.openclassrooms.mareu.entities;
 
-import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullDateException;
-import com.openclassrooms.mareu.exceptions.NullEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndException;
+import com.openclassrooms.mareu.exceptions.NullStartException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
-import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
+import com.openclassrooms.mareu.exceptions.PassedStartException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class Reunion extends Reservation {
 
     private List<Participant> participants;
 
-    public Reunion(LocalDateTime start, LocalDateTime end) throws NullDateException, NullStartTimeException, NullEndTimeException, PassedDatesException, PassedStartTimeException, InvalidEndTimeException {
+    public Reunion(LocalDateTime start, LocalDateTime end) throws NullDatesException, NullStartException, NullEndException, PassedDatesException, PassedStartException, InvalidEndException {
         super(start, end);
         this.participants = new ArrayList<>();
     }

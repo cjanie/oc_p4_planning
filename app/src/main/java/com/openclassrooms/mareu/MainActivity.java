@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(isVisible) {
             this.searchFragment.setVisibility(View.VISIBLE); //  TODO with fragment layout manager?
         } else {
-            this.searchFragment.setVisibility(View.INVISIBLE); // TODO
+            this.searchFragment.setVisibility(View.GONE); // TODO
         }
     }
 

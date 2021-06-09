@@ -3,6 +3,7 @@ package com.openclassrooms.mareu.api;
 import androidx.lifecycle.MutableLiveData;
 
 import com.openclassrooms.mareu.entities.Reunion;
+import com.openclassrooms.mareu.exceptions.NullReunionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,23 +31,15 @@ public class ReunionService {
     }
 
     public void addReunion(Reunion reunion) {
-        List<Reunion> reunions = this.mutableLiveDataReunions.getValue();
-        if(reunions == null) {
-            reunions = new ArrayList<>();
-            reunions.add(reunion);
-            this.mutableLiveDataReunions.setValue(reunions);
-        } else {
-            reunions.add(reunion);
-            this.mutableLiveDataReunions.setValue(reunions);
-        }
-
+        this.mutableLiveDataReunions.getValue().add(reunion);
     }
 
-    public void saveReunions(List<Reunion> reunions) {
-        if(reunions != null) {
+    public void saveReunions(List<Reunion> reunions) throws NullReunionException {
+        if(reunions == null) {
+            throw new NullReunionException();
+        } else {
             this.mutableLiveDataReunions.setValue(reunions);
         }
-
     }
 
     public void removeReunion(Reunion reunion) {

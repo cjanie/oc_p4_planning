@@ -23,6 +23,7 @@
     <string name="error_invalid_end_time">Erreur: l\'heure de fin est invalide.</string>
     <string name="error_no_start_time_selected">Erreur: l\'heure de début n\'a pas été sélectionnée.</string>
     <string name="error_no_end_time_selected">Erreur: l\'heure de fin n\'a pas été sélectionnée.</string>
+    <string name="error_passed_dates">Erreur: les dates sont passées.</string>
     <string name="reserve">Reserver</string>
     <string name="error_no_reservation">Erreur: aucune reservation n\'est enregistrée.</string>
     <string name="success">Succès</string>
@@ -44,4 +45,5 @@
     <string name="OK">OK</string>
     <string name="clear">Effacer</string>
     <string name="save">Sauvegarder</string>
+    <string name="error_null_reunion">Erreur: la reunion est nulle.</string>
 </resources>

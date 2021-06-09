@@ -1,11 +1,11 @@
 package com.openclassrooms.mareu.entities;
 
-import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullDateException;
-import com.openclassrooms.mareu.exceptions.NullEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndException;
+import com.openclassrooms.mareu.exceptions.NullStartException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
-import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
+import com.openclassrooms.mareu.exceptions.PassedStartException;
 import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 
 import org.junit.Before;
@@ -31,7 +31,7 @@ public class PlaceIsReservableTest {
     private Reservation resAt7;
 
     @Before
-    public void setUp() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    public void setUp() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
         this.now = LocalDateTime.now();
         this.resAt1 = new Reservation(now.plusHours(1), now.plusHours(2));
         this.resAt2 = new Reservation(now.plusHours(2), now.plusHours(3));
@@ -99,7 +99,7 @@ public class PlaceIsReservableTest {
      */
 
     @Test
-    public void reserveWithSuccessShouldAddReservation() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, UnavailablePlacesException {
+    public void reserveWithSuccessShouldAddReservation() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, UnavailablePlacesException {
         Place place = new Place();
         place.reserve(this.resAt7);
         place.reserve(new Reservation(this.now.plusHours(4), this.now.plusHours(5)));
@@ -109,7 +109,7 @@ public class PlaceIsReservableTest {
     }
 
     @Test(expected = UnavailablePlacesException.class)
-    public void reserveWithoutSuccessShouldThrowUnavailableException() throws UnavailablePlacesException, PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    public void reserveWithoutSuccessShouldThrowUnavailableException() throws UnavailablePlacesException, PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
         Place place = new Place();
         place.reserve(this.resAt7);
         place.reserve(this.resAt4);
@@ -118,7 +118,7 @@ public class PlaceIsReservableTest {
     }
 
     @Test
-    public void resetPlaceAvailableAtDefinedTimeShouldRemoveReservationStartingAtThisTime() throws UnavailablePlacesException, PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    public void resetPlaceAvailableAtDefinedTimeShouldRemoveReservationStartingAtThisTime() throws UnavailablePlacesException, PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
         Place place = new Place();
         Reservation reservation = new Reservation(this.now.plusHours(2), this.now.plusHours(3));
         place.reserve(reservation);

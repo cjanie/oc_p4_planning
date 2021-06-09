@@ -9,12 +9,12 @@ import com.openclassrooms.mareu.api.PlaceService;
 import com.openclassrooms.mareu.entities.Participant;
 import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reservation;
-import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullDateException;
-import com.openclassrooms.mareu.exceptions.NullEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndException;
+import com.openclassrooms.mareu.exceptions.NullStartException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
-import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
+import com.openclassrooms.mareu.exceptions.PassedStartException;
 import com.openclassrooms.mareu.ui.AddReunionActivity;
 import com.openclassrooms.mareu.utils.CustomDateTimeFormatter;
 
@@ -56,12 +56,12 @@ public class AddReunionActivityTest {
             new ActivityScenarioRule(AddReunionActivity.class);
 
     @Before
-    public void setUp() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    public void setUp() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
         this.activityScenario = this.activityScenarioRule.getScenario();
         assertThat(this.activityScenario, notNullValue());
 
         this.defaultStartExpected = LocalDateTime.now();
-        this.defaultEndExpected = LocalDateTime.now().plusHours(1);
+        this.defaultEndExpected = LocalDateTime.now().plusMinutes(DELAY.REUNION_DURATION.getMinutes());
         this.reservation = new Reservation(this.defaultStartExpected,defaultEndExpected);
 
         this.place = new Place("Oman");

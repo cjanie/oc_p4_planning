@@ -9,15 +9,17 @@ import com.openclassrooms.mareu.exceptions.EmptyAvailableParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySelectedParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.exceptions.InvalidEndDateException;
+import com.openclassrooms.mareu.exceptions.InvalidEndException;
 import com.openclassrooms.mareu.exceptions.InvalidEndTimeException;
-import com.openclassrooms.mareu.exceptions.NullDateException;
-import com.openclassrooms.mareu.exceptions.NullEndTimeException;
+import com.openclassrooms.mareu.exceptions.NullDatesException;
+import com.openclassrooms.mareu.exceptions.NullEndException;
 import com.openclassrooms.mareu.exceptions.NullParticipantsException;
 import com.openclassrooms.mareu.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.exceptions.NullReservationException;
-import com.openclassrooms.mareu.exceptions.NullStartTimeException;
+import com.openclassrooms.mareu.exceptions.NullStartException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.exceptions.PassedStartDateException;
+import com.openclassrooms.mareu.exceptions.PassedStartException;
 import com.openclassrooms.mareu.exceptions.PassedStartTimeException;
 import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 
@@ -28,6 +30,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +53,7 @@ public class FormViewModelTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    private Reunion generateReunion() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    private Reunion generateReunion() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = now.plusDays(1);
         LocalDateTime end = now.plusDays(1).plusHours(1);
@@ -72,7 +75,7 @@ public class FormViewModelTest {
         assertNotNull(this.formViewModel.getStart().getValue());
     }
 
-    @DisplayName("get start date time at init should return now") // TODO next: should return next available dates for reservation
+    @DisplayName("get start date time at init should return now")
     @Test
     public void getStartAtInitShouldReturnNow() {
         LocalDateTime now = LocalDateTime.now();
@@ -82,7 +85,7 @@ public class FormViewModelTest {
 
     @DisplayName("set start then get start should return a date time when date time value is correct")
     @Test
-    public void setStartThenGetStartShouldReturnDateTime() throws PassedStartDateException, NullDateException, PassedStartTimeException {
+    public void setStartThenGetStartShouldReturnDateTime() throws PassedStartDateException, NullDatesException, PassedStartException, PassedDatesException, NullStartException, InvalidEndException, NullEndException, PassedStartTimeException, InvalidEndDateException, InvalidEndTimeException {
         LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
         this.formViewModel.setStart(tomorrow);
         assertEquals(tomorrow, this.formViewModel.getStart().getValue());
@@ -90,20 +93,21 @@ public class FormViewModelTest {
 
     @DisplayName("set start throws passed start date exception")
     @Test(expected = PassedStartDateException.class)
-    public void setStartWithPassedDateShouldThrowException() throws PassedStartDateException, NullDateException, PassedStartTimeException {
+    public void setStartWithPassedDateShouldThrowException() throws PassedStartDateException, NullDatesException, PassedStartException, PassedDatesException, NullStartException, InvalidEndException, NullEndException, PassedStartTimeException, InvalidEndDateException, InvalidEndTimeException {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         this.formViewModel.setStart(yesterday);
     }
 
-    @DisplayName("set start throws null date exception")
-    @Test(expected = NullDateException.class)
-    public void setStartAsNullShouldThrowException() throws PassedStartDateException, NullDateException, PassedStartTimeException {
+    @DisplayName("set start with default now instead of null")
+    @Test
+    public void setStartAsNullShouldThrowException() throws PassedStartDateException, NullDatesException, PassedStartException, PassedDatesException, NullStartException, InvalidEndException, NullEndException, PassedStartTimeException, InvalidEndDateException, InvalidEndTimeException {
         this.formViewModel.setStart(null);
+        assert(this.formViewModel.getStart().getValue().toLocalDate().isEqual(LocalDate.now()));
     }
 
     @DisplayName("set start throws passed start time exception")
     @Test(expected = PassedStartTimeException.class)
-    public void setStartWithPassedTimeShouldThrowException() throws PassedStartTimeException, PassedStartDateException, NullDateException {
+    public void setStartWithPassedTimeShouldThrowException() throws PassedStartException, PassedStartDateException, NullDatesException, PassedDatesException, NullStartException, InvalidEndException, NullEndException, PassedStartTimeException, InvalidEndDateException, InvalidEndTimeException {
         LocalDateTime now = LocalDateTime.now();
         this.formViewModel.setStart(now.minusMinutes(10));
     }
@@ -117,7 +121,7 @@ public class FormViewModelTest {
 
     @DisplayName("get end date time at init should return now + 1 hour")
     @Test
-    public void getEndDateAtInitShouldReturnDateOfToday() throws NullDateException, PassedDatesException, PassedStartDateException, InvalidEndTimeException, InvalidEndDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    public void getEndDateAtInitShouldReturnDateOfToday() throws NullDatesException, PassedDatesException, PassedStartDateException, InvalidEndException, InvalidEndDateException, NullStartException, NullEndException, PassedStartException {
         LocalDateTime now = LocalDateTime.now().plusHours(1);
         assert(now.minusHours(1).isBefore(this.formViewModel.getEnd().getValue()));
         assert(now.plusHours(1).isAfter(this.formViewModel.getEnd().getValue()));
@@ -126,7 +130,7 @@ public class FormViewModelTest {
 
     @DisplayName("set end then get end date time should return date time")
     @Test
-    public void setEndThenGetEndDateTimeShouldReturnDateTime() throws InvalidEndDateException, PassedStartDateException, NullDateException, PassedStartTimeException {
+    public void setEndThenGetEndDateTimeShouldReturnDateTime() throws InvalidEndDateException, PassedStartDateException, NullDatesException, PassedStartException, PassedDatesException, NullStartException, InvalidEndException, NullEndException, PassedStartTimeException, InvalidEndTimeException {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime tomorrow = now.plusDays(2);
         this.formViewModel.setStart(now);
@@ -137,7 +141,7 @@ public class FormViewModelTest {
 
     @DisplayName("when set end date throws InvalidEndDateException")
     @Test(expected = InvalidEndDateException.class)
-    public void setEndDateWithAnInvalidDateShouldThrowException() throws PassedStartDateException, InvalidEndDateException, NullDateException, PassedStartTimeException {
+    public void setEndDateWithAnInvalidDateShouldThrowException() throws PassedStartDateException, InvalidEndDateException, NullDatesException, PassedStartException, PassedDatesException, NullStartException, InvalidEndException, NullEndException, PassedStartTimeException, InvalidEndTimeException {
         LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
         LocalDateTime yesterday = tomorrow.minusDays(1);
         this.formViewModel.setStart(tomorrow);
@@ -146,7 +150,7 @@ public class FormViewModelTest {
 
     @DisplayName("when set passed start throws passed start date exception")
     @Test(expected = PassedStartDateException.class)
-    public void setPassedStartShoudThrowPassedStartDateException() throws PassedStartDateException, InvalidEndDateException, NullDateException, PassedStartTimeException {
+    public void setPassedStartShoudThrowPassedStartDateException() throws PassedStartDateException, InvalidEndDateException, NullDatesException, PassedStartException, PassedDatesException, NullStartException, InvalidEndException, NullEndException, PassedStartTimeException, InvalidEndTimeException {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         this.formViewModel.setStart(yesterday);
 
@@ -154,7 +158,7 @@ public class FormViewModelTest {
 
     @DisplayName("when set passed end throws invalid end date exception")
     @Test(expected = InvalidEndDateException.class)
-    public void setPassedEndShouldThrowInvalidEndDateException() throws InvalidEndDateException, NullDateException {
+    public void setPassedEndShouldThrowInvalidEndDateException() throws InvalidEndDateException, NullDatesException {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         this.formViewModel.setEnd(yesterday);
     }
@@ -186,26 +190,14 @@ public class FormViewModelTest {
         assertEquals(changeSubject, this.formViewModel.getSubject().getValue());
     }
 
-    // PLACE
-    @DisplayName("when set place throws null place exception")
-    @Test(expected = NullPlaceException.class)
-    public void buildReunionfailWhenNoPlaceAvailableShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException {
-        Reunion reunion = this.generateReunion();
-        // TODO
 
-    }
 
-    // SELECTED PARTICIPANTS
-    @DisplayName("set selected participants throws empty selected participants exception")
-    @Test(expected = EmptySelectedParticipantsException.class)
-    public void setSelectedParticipantsAsEmptyShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException {
-        this.formViewModel.setParticipants(new ArrayList<>());
-    }
+
 
     // CREATE REUNION
     @DisplayName("create reunion with success")
     @Test
-    public void createReunionSucceeds() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, PassedStartDateException, InvalidEndDateException, NullPlaceException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, NullParticipantsException, EmptyAvailableParticipantsException {
+    public void createReunionSucceeds() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, PassedStartDateException, InvalidEndDateException, NullPlaceException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, NullParticipantsException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException {
         Reunion reunion = this.generateReunion();
         this.formViewModel.setStart(reunion.getStart());
         this.formViewModel.setEnd(reunion.getEnd());
@@ -217,11 +209,11 @@ public class FormViewModelTest {
         assertEquals(reunion.getPlace(), returned.getPlace());
     }
 
-    @DisplayName("create reunion throws empty subject exception")
-    @Test(expected = EmptySubjectException.class)
-    public void buildReunionFailWhenSubjectIsEmptyShouldThrowException() throws PassedDatesException, InvalidEndTimeException, NullDateException, NullStartTimeException, NullEndTimeException, PassedStartTimeException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException, EmptyAvailableParticipantsException {
+    @DisplayName("create reunion throws null place exception")
+    @Test(expected = NullPlaceException.class)
+    public void createReunionWithPlaceAsNullShouldThrowException() throws PassedDatesException, InvalidEndException, PassedStartException, NullStartException, NullEndException, NullDatesException, PassedStartDateException, InvalidEndDateException, UnavailablePlacesException, NullPlaceException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException {
         Reunion reunion = this.generateReunion();
-        reunion.setSubject("");
+        reunion.setPlace(null);
 
         this.formViewModel.setStart(reunion.getStart());
         this.formViewModel.setEnd(reunion.getEnd());
@@ -231,11 +223,24 @@ public class FormViewModelTest {
         this.formViewModel.createReunion();
     }
 
-    @DisplayName("create reunion throws null place exception")
-    @Test(expected = NullPlaceException.class)
-    public void createReunionWithPlaceAsNullShouldThrowException() throws PassedDatesException, InvalidEndTimeException, PassedStartTimeException, NullStartTimeException, NullEndTimeException, NullDateException, PassedStartDateException, InvalidEndDateException, UnavailablePlacesException, NullPlaceException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, EmptyAvailableParticipantsException {
+    @DisplayName("create reunion throws empty selected participants exception")
+    @Test(expected = EmptySelectedParticipantsException.class)
+    public void setSelectedParticipantsAsEmptyShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException {
         Reunion reunion = this.generateReunion();
-        reunion.setPlace(null);
+
+        this.formViewModel.setStart(reunion.getStart());
+        this.formViewModel.setEnd(reunion.getEnd());
+        this.formViewModel.setPlace(reunion.getPlace());
+        this.formViewModel.setParticipants(new ArrayList<>());
+        this.formViewModel.setSubject(reunion.getSubject());
+        this.formViewModel.createReunion();
+    }
+
+    @DisplayName("create reunion throws empty subject exception")
+    @Test(expected = EmptySubjectException.class)
+    public void buildReunionFailWhenSubjectIsEmptyShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException {
+        Reunion reunion = this.generateReunion();
+        reunion.setSubject("");
 
         this.formViewModel.setStart(reunion.getStart());
         this.formViewModel.setEnd(reunion.getEnd());

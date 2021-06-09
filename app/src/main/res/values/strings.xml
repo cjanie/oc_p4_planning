@@ -23,6 +23,7 @@
     <string name="error_invalid_end_time">Error: invalid end time.</string>
     <string name="error_no_start_time_selected">Error: no start time selected.</string>
     <string name="error_no_end_time_selected">Error: no end time selected.</string>
+    <string name="error_passed_dates">Error: dates have passed over.</string>
     <string name="reserve">Reserve</string>
     <string name="error_no_reservation">Error: no reservation is done.</string>
     <string name="success">Success</string>
@@ -44,4 +45,5 @@
     <string name="OK">OK</string>
     <string name="clear">Clear</string>
     <string name="save">Save</string>
+    <string name="error_null_reunion">Error: Reunion is null</string>
 </resources>
