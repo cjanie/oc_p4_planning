@@ -16,6 +16,7 @@ import com.openclassrooms.mareu.exceptions.EmptyAvailableParticipantsException;
 import com.openclassrooms.mareu.exceptions.InvalidEndException;
 import com.openclassrooms.mareu.exceptions.NullDatesException;
 import com.openclassrooms.mareu.exceptions.NullEndException;
+import com.openclassrooms.mareu.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.exceptions.NullReservationException;
 import com.openclassrooms.mareu.exceptions.NullReunionException;
 import com.openclassrooms.mareu.exceptions.NullStartException;
@@ -29,54 +30,38 @@ import java.util.List;
 
 public class PlanningViewModel extends ViewModel {
 
-    private ParticipantService participantService;
+    final private PlaceService placeService;
 
-    private MutableLiveData<Reservation> reservation;
+    final private ParticipantService participantService;
 
-    private MutableLiveData<List<Participant>> allParticipants;
-
-    private MutableLiveData<List<Place>> allPlaces;
-
-    private MutableLiveData<List<Reunion>> allReunions;
+    final private ReunionService reunionService;
 
     public PlanningViewModel() {
+        this.placeService = PlaceService.getInstance();
         this.participantService = ParticipantService.getInstance();
-        this.reservation = new MutableLiveData<>();
-        this.allParticipants = this.participantService.getParticipants();
-        this.allPlaces = PlaceService.getInstance().getPlaces();
-        this.allReunions = ReunionService.getInstance().getReunions();
-    }
-
-    public MutableLiveData<Reservation> getReservation() {
-        return this.reservation;
-    }
-
-    public void setReservation(Reservation reservation) {
-        this.reservation.setValue(reservation);
-    }
-
-    public void setAllParticipants(MutableLiveData<List<Participant>> allParticipants) {
-            this.allParticipants = allParticipants;
-    }
-
-    public LiveData<List<Participant>> getAllParticipants() {
-        //this.allParticipants = ParticipantService.getInstance().getParticipants();
-        if(this.allParticipants == null) {
-            this.allParticipants = new MutableLiveData<>(ParticipantService.LIST_OF_PARTICIPANTS);
-        }
-        return this.allParticipants;
+        this.reunionService = ReunionService.getInstance();
     }
 
     public LiveData<List<Place>> getAllPlaces() {
-        return this.allPlaces;
+        return this.placeService.getPlaces();
     }
+
+    public LiveData<List<Participant>> getAllParticipants() {
+        return this.participantService.getParticipants();
+    }
+
+    public LiveData<List<Reunion>> getAllReunions() {
+        return this.reunionService.getReunions();
+    }
+
+    // WITH RESERVATION
 
     public LiveData<List<Place>> getAvailablePlaces(Reservation reservation) throws NullReservationException, UnavailablePlacesException {
         MutableLiveData<List<Place>> availablePlaces = new MutableLiveData<>(); // Instantiate the object to return
         if(reservation == null) {
             throw new NullReservationException();
         } else {
-            List<Place> listOfAllPlaces = this.allPlaces.getValue(); // Get the data that has to be filtered
+            List<Place> listOfAllPlaces = this.getAllPlaces().getValue(); // Get the data that has to be filtered
             if(listOfAllPlaces != null && !listOfAllPlaces.isEmpty()) {
                 List<Place> listOfAvailablePlaces = new ArrayList<>(); // Instantiate the list that will receive filtered data
                 for(Place place: listOfAllPlaces) {
@@ -114,89 +99,45 @@ public class PlanningViewModel extends ViewModel {
                 }
             }
         }
-
         return availableParticipants;
     }
 
+    public LiveData<Reservation> getNext(Reservation current) throws NullReservationException, InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException, PassedStartException {
+        if(current == null) {
+            throw new NullReservationException();
+        }
+        List<Reunion> reunions = this.getAllReunions().getValue();
 
-
-    public void reservePlace(Place place, Reservation reservation) throws UnavailablePlacesException {
-        place.reserve(reservation);
-    }
-
-    public LiveData<List<Reunion>> getAllReunions() {
-        return this.allReunions;
-    }
-
-    public void addReunion(Reunion reunion) throws NullReunionException {
-        this.addToPlanningRespectingAscendantOrderOfTime(reunion);
-        ReunionService.getInstance().saveReunions(this.allReunions.getValue());
-    }
-
-    private void addToPlanningRespectingAscendantOrderOfTime(Reunion reunion) throws NullReunionException {
-        if(reunion == null) {
-            throw new NullReunionException();
-        } else {
-
-            List<Reunion> sorted = this.allReunions.getValue();
-
-            if(sorted.isEmpty()) {
-                sorted.add(reunion);
-            } else { // to make a sorted list of reservations
-
-                LocalDateTime earlierStart = sorted.get(0).getStart();
-                LocalDateTime latestStart = sorted.get(sorted.size() - 1).getStart();
-
-                if(reunion.getStart().isEqual(latestStart) || reunion.getStart().isAfter(latestStart)) {
-                    sorted.add(reunion);
-                } else if(reunion.getStart().isBefore(earlierStart)) {
-                    sorted.add(0, reunion);
+        List<LocalDateTime> ends = new ArrayList<>();
+        for(int i=0; i< reunions.size(); i++) {
+            Reunion reunion = reunions.get(i);
+            if(ends.isEmpty()) {
+                ends.add(reunion.getEnd());
+            } else {
+                if(reunion.getEnd().isEqual(ends.get(ends.size() - 1))
+                        || reunion.getEnd().isAfter(ends.get(ends.size() - 1))) {
+                    ends.add(reunion.getEnd());
+                } else if(reunion.getEnd().isBefore(ends.get(0))) {
+                    ends.add(0, reunion.getEnd());
                 } else {
-                    for(int i = 0; i<sorted.size(); i++) {
-                        if(sorted.get(i).getStart().isEqual(reunion.getStart()) || sorted.get(i).getStart().isAfter(reunion.getStart())) {
-                            sorted.add(i, reunion);
+                    for(int j=0; j<ends.size(); j++) {
+                        if(reunion.getEnd().isEqual(ends.get(j)) || reunion.getEnd().isAfter(ends.get(j))) {
+                            ends.add(j + 1, reunion.getEnd());
                             break;
                         }
                     }
                 }
             }
-
-
-
-            this.allReunions.setValue(sorted);
         }
-    }
-
-    public Reservation getNextAvailableReservation(Reservation currentReservation) throws NullReservationException, PassedDatesException, InvalidEndException, PassedStartException, NullStartException, NullEndException, NullDatesException {
-
-        Reservation nextReservation = null;
-        try {
-            this.getAvailablePlaces(currentReservation).getValue();
-        } catch (UnavailablePlacesException e) {
-            e.printStackTrace();
-            // create Reservation: next available
-            List<Reservation> currentReservations = new ArrayList<>();
-
-            for(Place place: this.getAllPlaces().getValue()) {
-                currentReservations.add(place.getReservations().get(0));
-            };
-            List<LocalDateTime> endOfCurrentReservations = new ArrayList<>();
-            endOfCurrentReservations.add(currentReservations.get(0).getEnd());
-            for(int i=1; i<currentReservations.size(); i++) {
-                if(currentReservations.get(i).getEnd().isEqual(endOfCurrentReservations.get(0))
-                        || currentReservations.get(i).getEnd().isAfter(endOfCurrentReservations.get(0))) {
-                    endOfCurrentReservations.add(currentReservations.get(i).getEnd());
-                } else {
-                    endOfCurrentReservations.add(0, currentReservations.get(i).getEnd());
-                }
-            }
-            LocalDateTime nextStart = endOfCurrentReservations.get(0).plusMinutes(DELAY.SHORT.getMinutes()); // Delay to avoid unavailable places exception
-            LocalDateTime nextEnd = nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes());
-            nextReservation = new Reservation(nextStart, nextEnd);
+        LocalDateTime nextStart = null;
+        if(ends.iterator().hasNext()) {
+            nextStart = ends.iterator().next().plusMinutes(DELAY.SHORT.getMinutes());
+        } else {
+            nextStart = current.getStart();
         }
-        return nextReservation;
+        LocalDateTime nextEnd = nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes());
+
+        return new MutableLiveData<>(new Reservation(nextStart, nextEnd));
     }
-
-
 
 }

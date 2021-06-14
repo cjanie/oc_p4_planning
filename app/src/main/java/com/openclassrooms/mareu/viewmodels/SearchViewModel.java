@@ -8,7 +8,6 @@ import com.openclassrooms.mareu.api.PlaceService;
 import com.openclassrooms.mareu.api.ReunionService;
 import com.openclassrooms.mareu.entities.Place;
 import com.openclassrooms.mareu.entities.Reunion;
-import com.openclassrooms.mareu.exceptions.NullPlaceException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class SearchViewModel extends ViewModel {
 
 
     public SearchViewModel() {
-        this.allReunions = ReunionService.getInstance().getReunions();
+        this.allReunions = (MutableLiveData<List<Reunion>>) ReunionService.getInstance().getReunions();
         this.allPlaces = PlaceService.getInstance().getPlaces();
         this.selectedPlace = new MutableLiveData<>();
         this.selectedDate = new MutableLiveData<>();

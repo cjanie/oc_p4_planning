@@ -2,6 +2,7 @@ package com.openclassrooms.mareu.entities;
 
 import androidx.annotation.NonNull;
 
+import com.openclassrooms.mareu.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 import com.openclassrooms.mareu.interfaces.IsReservable;
 
@@ -42,7 +43,7 @@ public class Place extends HasPlanning implements IsReservable {
     }
 
     @Override
-    public void reserve(Reservation reservation) throws UnavailablePlacesException {
+    public void reserve(Reservation reservation) throws NullPlaceException {
         this.addToPlanningIfHasFreeSlotForReservation(reservation);
     }
 

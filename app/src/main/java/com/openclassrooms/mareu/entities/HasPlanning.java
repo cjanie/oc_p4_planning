@@ -1,5 +1,6 @@
 package com.openclassrooms.mareu.entities;
 
+import com.openclassrooms.mareu.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.exceptions.UnavailablePlacesException;
 
 import java.time.LocalDateTime;
@@ -65,11 +66,11 @@ public class HasPlanning {
         return hasFreeSlot;
     }
 
-    protected void addToPlanningIfHasFreeSlotForReservation(Reservation reservation) throws UnavailablePlacesException {
+    protected void addToPlanningIfHasFreeSlotForReservation(Reservation reservation) throws NullPlaceException {
         if(this.hasFreeSlotForReservation(reservation)) {
             this.addToPlanningRespectingAscendantOrderOfTime(reservation);
         } else {
-            throw new UnavailablePlacesException();
+            throw new NullPlaceException();
         }
     }
 

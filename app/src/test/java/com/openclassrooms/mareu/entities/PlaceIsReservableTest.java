@@ -3,6 +3,7 @@ package com.openclassrooms.mareu.entities;
 import com.openclassrooms.mareu.exceptions.InvalidEndException;
 import com.openclassrooms.mareu.exceptions.NullDatesException;
 import com.openclassrooms.mareu.exceptions.NullEndException;
+import com.openclassrooms.mareu.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.exceptions.NullStartException;
 import com.openclassrooms.mareu.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.exceptions.PassedStartException;
@@ -99,7 +100,7 @@ public class PlaceIsReservableTest {
      */
 
     @Test
-    public void reserveWithSuccessShouldAddReservation() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, UnavailablePlacesException {
+    public void reserveWithSuccessShouldAddReservation() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException {
         Place place = new Place();
         place.reserve(this.resAt7);
         place.reserve(new Reservation(this.now.plusHours(4), this.now.plusHours(5)));
@@ -108,8 +109,8 @@ public class PlaceIsReservableTest {
         assert(place.getReservations().size() == 3);
     }
 
-    @Test(expected = UnavailablePlacesException.class)
-    public void reserveWithoutSuccessShouldThrowUnavailableException() throws UnavailablePlacesException, PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
+    @Test(expected = NullPlaceException.class)
+    public void reserveWithoutSuccessShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException {
         Place place = new Place();
         place.reserve(this.resAt7);
         place.reserve(this.resAt4);
@@ -118,7 +119,7 @@ public class PlaceIsReservableTest {
     }
 
     @Test
-    public void resetPlaceAvailableAtDefinedTimeShouldRemoveReservationStartingAtThisTime() throws UnavailablePlacesException, PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
+    public void resetPlaceAvailableAtDefinedTimeShouldRemoveReservationStartingAtThisTime() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException {
         Place place = new Place();
         Reservation reservation = new Reservation(this.now.plusHours(2), this.now.plusHours(3));
         place.reserve(reservation);

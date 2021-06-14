@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.exceptions.EmptyAvailableParticipantsException;
 import com.openclassrooms.mareu.exceptions.EmptySelectedParticipantsException;
@@ -36,7 +37,17 @@ public class ErrorHandler implements ErrorInterface {
         this.context = context;
     }
 
-    public void signalErrorInSnackbar(String error, View v) {
+    public void signalError(String error, View v) {
+        this.signalErrorInSnackbar(error, v);
+    }
+
+    public void signalError(String error, TextInputLayout layout) {
+        layout.setError(error);
+        layout.getEditText().setError(error);
+        layout.getEditText().setText("");
+    }
+
+    private void signalErrorInSnackbar(String error, View v) {
         int colorError = ContextCompat.getColor(this.context, R.color.color_accent);
         Snackbar.make(v, error, BaseTransientBottomBar.LENGTH_LONG).setBackgroundTint(colorError).show();
     }

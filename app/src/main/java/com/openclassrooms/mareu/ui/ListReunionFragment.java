@@ -24,6 +24,7 @@ import com.openclassrooms.mareu.events.InitSearchEvent;
 import com.openclassrooms.mareu.events.SearchByDateEvent;
 import com.openclassrooms.mareu.events.SearchByPlaceAndDateEvent;
 import com.openclassrooms.mareu.events.SearchByPlaceEvent;
+import com.openclassrooms.mareu.exceptions.NullReunionException;
 import com.openclassrooms.mareu.viewmodels.PlanningViewModel;
 import com.openclassrooms.mareu.viewmodels.SearchViewModel;
 
@@ -97,7 +98,7 @@ public class ListReunionFragment extends Fragment {
     }
 
     @Subscribe
-    public void onDeleteReunionEventFired(DeleteReunionEvent event) {
+    public void onDeleteReunionEventFired(DeleteReunionEvent event) throws NullReunionException {
         ReunionService.getInstance().removeReunion(event.reunion);
     }
 
