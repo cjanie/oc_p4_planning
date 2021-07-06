@@ -36,7 +36,7 @@
 
             <fragment
                 android:id="@+id/search_place_spinner_fragment"
-                android:name="com.openclassrooms.mareu.ui.PlaceSpinnerFragment"
+                android:name="com.openclassrooms.mareu.app.ui.PlaceSpinnerFragment"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toStartOf="@+id/search_by_place_clear_button"

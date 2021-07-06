@@ -1,17 +1,12 @@
 package com.openclassrooms.mareu.testutils;
 
-import com.openclassrooms.mareu.api.ParticipantService;
-import com.openclassrooms.mareu.api.PlaceService;
-import com.openclassrooms.mareu.api.ReunionService;
-import com.openclassrooms.mareu.entities.Participant;
-import com.openclassrooms.mareu.entities.Place;
-import com.openclassrooms.mareu.entities.Reunion;
-import com.openclassrooms.mareu.exceptions.InvalidEndException;
-import com.openclassrooms.mareu.exceptions.NullDatesException;
-import com.openclassrooms.mareu.exceptions.NullEndException;
-import com.openclassrooms.mareu.exceptions.NullStartException;
-import com.openclassrooms.mareu.exceptions.PassedDatesException;
-import com.openclassrooms.mareu.exceptions.PassedStartException;
+import com.openclassrooms.mareu.data.api.ReunionService;
+import com.openclassrooms.mareu.data.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.data.exceptions.NullDatesException;
+import com.openclassrooms.mareu.data.exceptions.NullEndException;
+import com.openclassrooms.mareu.data.exceptions.NullStartException;
+import com.openclassrooms.mareu.data.exceptions.PassedDatesException;
+import com.openclassrooms.mareu.data.exceptions.PassedStartException;
 
 public class ApiTestUtil {
 

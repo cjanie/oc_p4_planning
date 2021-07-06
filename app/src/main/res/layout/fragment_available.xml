@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/place_spinner_fragment"
-        android:name="com.openclassrooms.mareu.ui.PlaceSpinnerFragment"
+        android:name="com.openclassrooms.mareu.app.ui.PlaceSpinnerFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
