@@ -1,23 +1,19 @@
 package com.openclassrooms.mareu.app;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.app.ui.AddReunionActivity;
-import com.openclassrooms.mareu.app.ui.SearchFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-        this.isSearchFragmentVisible(false);
+        this.searchFragment.setVisibility(View.GONE);
         this.fab.setOnClickListener(this);
     }
 
@@ -72,21 +68,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_search:
-                isSearchFragmentVisible(true);
-                return true;
-            case R.id.action_list:
-                isSearchFragmentVisible(false);
+                if(this.searchFragment.getVisibility() == View.GONE) {
+                    this.searchFragment.setVisibility(View.VISIBLE);
+                    item.setIcon(R.drawable.ic_baseline_clear_24);
+                } else {
+                    this.searchFragment.setVisibility(View.GONE);
+                    item.setIcon(R.drawable.ic_baseline_filter_list_24);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void isSearchFragmentVisible(boolean isVisible) {
-        if(isVisible) {
-            this.searchFragment.setVisibility(View.VISIBLE);
-        } else {
-            this.searchFragment.setVisibility(View.GONE);
         }
     }
 

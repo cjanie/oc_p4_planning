@@ -4,6 +4,7 @@ import com.openclassrooms.mareu.data.exceptions.UnavailableException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HasPlanning {
@@ -23,24 +24,8 @@ public class HasPlanning {
     }
 
     private void addReservationByAscOrderOfTime(Reservation reservation) {
-        if(this.reservations.isEmpty()) {
-            this.reservations.add(reservation);
-        } else { // to make a sorted list of reservations
-            LocalDateTime earlierStart = this.reservations.get(0).getStart();
-            LocalDateTime latestStart = this.reservations.get(this.reservations.size() - 1).getStart();
-            if(reservation.getStart().isAfter(latestStart)) {
-                this.reservations.add(reservation);
-            } else if(reservation.getStart().isBefore(earlierStart)) {
-                this.reservations.add(0, reservation);
-            } else {
-                for(int i = 0; i<this.reservations.size(); i++) {
-                    if(this.reservations.get(i).getStart().isAfter(reservation.getStart())) {
-                        this.reservations.add(i, reservation);
-                        break;
-                    }
-                }
-            }
-        }
+        this.reservations.add(reservation);
+        Collections.sort(this.reservations, (a, b) -> a.getStart().compareTo(b.getStart()));
     }
 
     protected boolean hasFreePeriodOfTime(Reservation reservation) {

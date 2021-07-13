@@ -1,9 +1,14 @@
 package com.openclassrooms.mareu.domain.viewmodels;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.data.enums.DELAY;
 import com.openclassrooms.mareu.data.api.ReunionService;
 import com.openclassrooms.mareu.data.entities.Participant;
@@ -31,7 +36,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FormViewModel extends ViewModel {
+public class FormViewModel extends AndroidViewModel {
 
     private final ReunionService reunionService;
 
@@ -46,9 +51,9 @@ public class FormViewModel extends ViewModel {
 
     private final MutableLiveData<String> subject;
 
-    public FormViewModel() {
+    public FormViewModel(@NonNull Application application) {
+        super(application);
         this.reunionService = ReunionService.getInstance();
-        // Default start now - TODO: start when next reservation is available
         this.start = new MutableLiveData<>(LocalDateTime.now());
         this.end = new MutableLiveData<>(this.start.getValue().plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
         this.place = new MutableLiveData<>();
@@ -92,26 +97,22 @@ public class FormViewModel extends ViewModel {
     }
 
     public void setEnd(LocalDateTime dateTime) throws NullDatesException, NullEndException, NullStartException, InvalidEndTimeException, InvalidEndDateException {
-        if(dateTime == null) {
-            if(this.start.getValue() == null) {
-                throw new NullDatesException();
-            } else {
-                this.end.setValue(this.start.getValue().plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
-            }
-        }
         if(this.start.getValue() == null) {
             this.start.setValue(LocalDateTime.now());
         }
-
-        try {
-            Reservation reservation = new Reservation(this.start.getValue(), dateTime);
-            this.start.setValue(reservation.getStart());
-            this.end.setValue(reservation.getEnd());
-        } catch (PassedDatesException | PassedStartException | InvalidEndException e) {
-            if(dateTime.toLocalDate().isEqual(this.getStart().getValue().toLocalDate())) {
-                throw new InvalidEndTimeException();
-            } else {
-                throw new InvalidEndDateException();
+        if(dateTime == null) {
+            this.end.setValue(this.start.getValue().plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
+        } else {
+            try {
+                Reservation reservation = new Reservation(this.start.getValue(), dateTime);
+                this.start.setValue(reservation.getStart());
+                this.end.setValue(reservation.getEnd());
+            } catch (PassedDatesException | PassedStartException | InvalidEndException e) {
+                if(dateTime.toLocalDate().isEqual(this.getStart().getValue().toLocalDate())) {
+                    throw new InvalidEndTimeException();
+                } else {
+                    throw new InvalidEndDateException();
+                }
             }
         }
     }
@@ -131,6 +132,20 @@ public class FormViewModel extends ViewModel {
 
     public void setParticipants(List<Participant> participants) {
         this.participants.setValue(participants);
+    }
+
+    public LiveData<String> getParticipantsNames() {
+        StringBuilder stringBuilder = new StringBuilder("");
+        if(this.participants.getValue() != null && !this.participants.getValue().isEmpty()) {
+            for(Participant participant: this.participants.getValue()) {
+                stringBuilder.append(participant.getFirstName() + ", ");
+            }
+        }
+        String names = stringBuilder.toString();
+        if(!names.isEmpty()) {
+            names = names.substring(0, names.length() - 2);
+        }
+        return new MutableLiveData<>(names);
     }
 
     public LiveData<String> getSubject() {
@@ -172,13 +187,7 @@ public class FormViewModel extends ViewModel {
         return reunion;
     }
 
-    public void save() throws NullPlaceException, InvalidEndException, NullEndException, PassedStartException, EmptySubjectException, NullStartException, PassedDatesException, EmptySelectedParticipantsException, NullDatesException, NullReunionException, UnavailableException {
-        System.out.println("SAVE FORM VIEW MODEL");
-        if(this.createReunion() == null) {
-            System.out.println("Reunion has not been created");
-        } else {
-            System.out.println("Place of new Reunion: " + this.createReunion().getPlace().getName());
-        }
+    public void save() throws NullPlaceException, InvalidEndException, NullEndException, PassedStartException, EmptySubjectException, NullStartException, PassedDatesException, EmptySelectedParticipantsException, NullDatesException, NullReunionException {
         this.reunionService.addReunion(this.createReunion());
     }
 }

@@ -4,11 +4,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,8 +15,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -40,7 +35,6 @@ import com.openclassrooms.mareu.data.exceptions.NullReservationException;
 import com.openclassrooms.mareu.data.exceptions.NullReunionException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartDateException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartTimeException;
-import com.openclassrooms.mareu.data.exceptions.UnavailableException;
 import com.openclassrooms.mareu.data.exceptions.UnavailablePlacesException;
 import com.openclassrooms.mareu.data.exceptions.NullDatesException;
 import com.openclassrooms.mareu.data.exceptions.NullEndException;
@@ -50,10 +44,14 @@ import com.openclassrooms.mareu.data.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartException;
 import com.openclassrooms.mareu.app.utils.CustomDateTimeFormatter;
 import com.openclassrooms.mareu.app.utils.ErrorHandler;
+import com.openclassrooms.mareu.domain.events.SetEndEvent;
+import com.openclassrooms.mareu.domain.events.SetStartEvent;
 import com.openclassrooms.mareu.domain.viewmodels.FormViewModel;
 import com.openclassrooms.mareu.domain.viewmodels.PlanningViewModel;
 
-import java.time.LocalDateTime;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,9 +61,7 @@ import butterknife.ButterKnife;
 public class AddReunionActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, TextWatcher, View.OnClickListener {
 
     private FormViewModel formViewModel;
-
     private PlanningViewModel planningViewModel;
-
     private ErrorHandler errorHandler;
 
     @BindView(R.id.reunion_start_date_layout)
@@ -144,7 +140,6 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
             this.endTimeLayout.getEditText().setText(formatter.formatTimeToString(dateTime.toLocalTime()));
             this.endTimeLayout.setError(null);
         });
-
         this.onReserve(); // Creates reservation then loads available places and participants
     }
 
@@ -174,13 +169,13 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
     @Override
     public void onClick(View v) {
         if(v == this.startDateLayout || v == this.startDateInput) {
-            this.showStartDatePicker();
-        } else if(v == this.endDateLayout || v == this.endDateInput) {
-            this.showEndDatePicker();
+            new StartPicker(this, this.formViewModel.getStart().getValue()).showDatePickerDialog();
         } else if(v == this.startTimeLayout || v == this.startTimeInput) {
-            this.showStartTimePicker();
+            new StartPicker(this, this.formViewModel.getStart().getValue()).showTimePickerDialog();
+        } else if(v == this.endDateLayout || v == this.endDateInput) {
+            new EndPicker(this, this.formViewModel.getEnd().getValue()).showDatePickerDialog();
         } else if(v == this.endTimeLayout || v == this.endTimeInput) {
-            this.showEndTimePicker();
+            new EndPicker(this, this.formViewModel.getEnd().getValue()).showTimePickerDialog();
         } else if(v == this.participantsSpinner) {
             this.showParticipantsDialog();
         } else if(v == this.saveButton) {
@@ -190,226 +185,96 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    // START DATE PICKER
-    private void showStartDatePicker() {
-        // Set UI from Data
-        LocalDateTime defaultDateTime = this.formViewModel.getStart().getValue();
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                // Set selected
-                LocalDateTime selected = LocalDateTime.of(year, month + 1, dayOfMonth, // Month is an index value
-                        defaultDateTime.getHour(), defaultDateTime.getMinute());
-                try {
-                    formViewModel.setStart(selected);
-                    onReserve();
-
-                } catch (NullDatesException | NullStartException | NullEndException e) {
-                    errorHandler.signalError(errorHandler.getMessage(new NullDatesException()), startDateLayout);
-                } catch (PassedStartDateException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), startDateLayout);
-                } catch (PassedStartTimeException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), startTimeLayout);
-                } catch (InvalidEndDateException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), endDateLayout);
-                } catch (InvalidEndTimeException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), endTimeLayout);
-                }
-            }
-        }, defaultDateTime.getYear(),
-                defaultDateTime.getMonthValue() - 1, // Picker constructor requires index starting from 0: month is at index getMonthValue - 1 = 4
-                defaultDateTime.getDayOfMonth());
-        datePickerDialog.setTitle(getString(R.string.select_date));
-        datePickerDialog.show();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
 
-    // END DATE PICKER
-    private void showEndDatePicker() {
-        LocalDateTime defaultDateTime = formViewModel.getEnd().getValue();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                LocalDateTime selected = LocalDateTime.of(year, month + 1, dayOfMonth,
-                        defaultDateTime.getHour(), defaultDateTime.getMinute());
-                try {
-                    formViewModel.setEnd(selected);
-                    onReserve();
-
-                } catch (NullDatesException | NullStartException | NullEndException e) {
-                    errorHandler.signalError(errorHandler.getMessage(new NullDatesException()), startDateLayout);
-                } catch (InvalidEndDateException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), endDateLayout);
-                } catch (InvalidEndTimeException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), endTimeLayout);
-                }
-            }
-        }, defaultDateTime.getYear(), defaultDateTime.getMonthValue() - 1, defaultDateTime.getDayOfMonth());
-        datePickerDialog.setTitle(getString(R.string.select_date));
-        datePickerDialog.show();
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
-    // START TIME PICKER
-    private void showStartTimePicker() {
-        LocalDateTime defaultDateTime = this.formViewModel.getStart().getValue();
-        if(defaultDateTime != null) {
-            TimePickerDialog timePickerDialog = new TimePickerDialog(this, (TimePicker view, int hourOfDay, int minute) -> {
-                LocalDateTime selected = LocalDateTime.of(defaultDateTime.getYear(), defaultDateTime.getMonth(), defaultDateTime.getDayOfMonth(),
-                        hourOfDay, minute);
-                try {
-                    formViewModel.setStart(selected);
-                    onReserve();
-
-                } catch (NullDatesException | NullStartException | NullEndException e) {
-                    errorHandler.signalError(errorHandler.getMessage(new NullDatesException()), this.startDateLayout);
-                } catch (PassedStartDateException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), this.startDateLayout);
-                } catch (PassedStartTimeException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), this.startTimeLayout);
-                } catch (InvalidEndDateException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), this.endDateLayout);
-                } catch (InvalidEndTimeException e) {
-                    errorHandler.signalError(errorHandler.getMessage(e), this.endTimeLayout);
-                }
-            }, defaultDateTime.getHour(), defaultDateTime.getMinute(), true); // True for 24 hour time
-            timePickerDialog.setTitle(this.getString(R.string.select_start_time));
-            timePickerDialog.show();
+    @Subscribe
+    public void setStart(SetStartEvent event) {
+        try {
+            this.formViewModel.setStart(event.start);
+            this.onReserve();
+        } catch (NullDatesException | NullStartException | NullEndException e) {
+            errorHandler.signalError(errorHandler.getMessage(new NullDatesException()), startDateLayout);
+        } catch (PassedStartDateException e) {
+            errorHandler.signalError(errorHandler.getMessage(e), startDateLayout);
+        } catch (PassedStartTimeException e) {
+            errorHandler.signalError(errorHandler.getMessage(e), startTimeLayout);
+        } catch (InvalidEndDateException e) {
+            errorHandler.signalError(errorHandler.getMessage(e), endDateLayout);
+        } catch (InvalidEndTimeException e) {
+            errorHandler.signalError(errorHandler.getMessage(e), endTimeLayout);
         }
     }
 
-    // END TIME PICKER
-    private void showEndTimePicker() {
-        LocalDateTime defaultDateTime = this.formViewModel.getEnd().getValue();
-        if(defaultDateTime != null) {
-            TimePickerDialog timePickerDialog = new TimePickerDialog(this, (TimePicker view, int hourOfDay, int minute) -> {
-                LocalDateTime selected = LocalDateTime.of(defaultDateTime.getYear(), defaultDateTime.getMonthValue(), defaultDateTime.getDayOfMonth(),
-                        hourOfDay, minute);
-                try {
-                    formViewModel.setEnd(selected);
-                    onReserve();
-
-                } catch (NullDatesException | NullStartException | NullEndException e) {
-                    this.errorHandler.signalError(this.errorHandler.getMessage(new NullDatesException()), this.startDateLayout);
-                } catch (InvalidEndDateException e) {
-                    this.errorHandler.signalError(this.errorHandler.getMessage(e), this.endDateLayout);
-                } catch (InvalidEndTimeException e) {
-                    this.errorHandler.signalError(this.errorHandler.getMessage(e), this.endTimeLayout);
-                }
-            }, defaultDateTime.getHour(), defaultDateTime.getMinute(), true);
-            timePickerDialog.setTitle(getString(R.string.select_end_time));
-            timePickerDialog.show();
+    @Subscribe
+    public void setEnd(SetEndEvent event) {
+        try {
+            formViewModel.setEnd(event.end);
+            onReserve();
+        } catch (NullDatesException | NullStartException | NullEndException e) {
+            errorHandler.signalError(errorHandler.getMessage(new NullDatesException()), startDateLayout);
+        } catch (InvalidEndDateException e) {
+            errorHandler.signalError(errorHandler.getMessage(e), endDateLayout);
+        } catch (InvalidEndTimeException e) {
+            errorHandler.signalError(errorHandler.getMessage(e), endTimeLayout);
         }
     }
 
     // PARTICIPANTS DIALOG // https://www.geeksforgeeks.org/alert-dialog-with-multipleitemselection-in-android/
     private void showParticipantsDialog() {
-
         this.planningViewModel.getAllParticipants().observe(this, allParticipants -> {
             // Prepare items
             String[] labels = new String[0];
             try {
-                labels = this.getParticipantsLabels(allParticipants);
+                labels = this.planningViewModel.getParticipantsLabels(allParticipants, new Reservation(this.formViewModel.getStart().getValue(), this.formViewModel.getEnd().getValue())).getValue();
             } catch (NullDatesException | NullStartException | NullEndException | PassedDatesException | PassedStartException | InvalidEndException e) {
                 this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.participantsLayout);
             }
-
             boolean[] checkedArray = new boolean[allParticipants.size()];
             for (int i = 0; i < allParticipants.size(); i++) {
                 if (this.formViewModel.getParticipants().getValue().contains(allParticipants.get(i))) {
                     checkedArray[i] = true;
                 }
             }
-
             List<Participant> selected = new ArrayList<>();
-
             // Build the dialog
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
             dialogBuilder.setTitle(getString(R.string.select_participants));
-
-            dialogBuilder.setMultiChoiceItems(labels, checkedArray, new DialogInterface.OnMultiChoiceClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                    checkedArray[which] = isChecked;
-                }
-            });
-
-            dialogBuilder.setPositiveButton(this.getString(R.string.done), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    for(int i=0; i<checkedArray.length; i++) {
-                        if(checkedArray[i]) {
-                            selected.add(allParticipants.get(i));
-                        }
+            dialogBuilder.setMultiChoiceItems(labels, checkedArray, (DialogInterface dialog, int which, boolean isChecked) -> checkedArray[which] = isChecked);
+            dialogBuilder.setPositiveButton(this.getString(R.string.done), (DialogInterface dialog, int which) -> {
+                for(int i=0; i<checkedArray.length; i++) {
+                    if(checkedArray[i]) {
+                        selected.add(allParticipants.get(i));
                     }
-                    formViewModel.setParticipants(selected);
                 }
+                this.formViewModel.setParticipants(selected);
             });
-
-            dialogBuilder.setNegativeButton(this.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-
-            dialogBuilder.setNeutralButton(this.getString(R.string.clear), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+            dialogBuilder.setNegativeButton(this.getString(R.string.cancel), (DialogInterface dialog, int which) -> dialog.dismiss());
+            dialogBuilder.setNeutralButton(this.getString(R.string.clear), (DialogInterface dialog, int which) -> {
                     selected.clear();
                     formViewModel.setParticipants(selected);
-                }
             });
-
             Dialog dialog = dialogBuilder.create();
             dialog.show();
         });
     }
 
-    private String[] getParticipantsLabels(List<Participant> participants) throws InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException, PassedStartException {
-        String[] array = new String[participants.size()];
-        if(participants != null && !participants.isEmpty()) {
-            List<String> labels = new ArrayList<>(); // Prepare labels as list first
-            for (Participant participant : participants) {
-                StringBuilder stringBuilder = new StringBuilder("");
-                stringBuilder.append(participant.getFirstName() + " : ");
-                Reservation reservation = new Reservation(this.formViewModel.getStart().getValue(), this.formViewModel.getEnd().getValue());
-                if (participant.isAvailable(reservation)) {
-                    stringBuilder.append(this.getString(R.string.available));
-                } else {
-                    stringBuilder.append(this.getString(R.string.unavailable));
-                }
-                labels.add(stringBuilder.toString());
-            }
-            labels.toArray(array); // Converts list to array
-        }
-        return array;
-    }
-
-    private String getParticipantsAsString(List<Participant> participants) {
-        StringBuilder stringBuilder = new StringBuilder("");
-        if(participants != null && !participants.isEmpty()) {
-            for(Participant participant: participants) {
-                stringBuilder.append(participant.getFirstName() + ", ");
-            }
-        }
-        String names = stringBuilder.toString();
-        if(!names.isEmpty()) {
-            names = names.substring(0, names.length() - 2);
-        }
-        return names;
-    }
-
     private void getAvailableData(Reservation reservation) {
-
         try {
             this.formViewModel.setStart(reservation.getStart());
             this.formViewModel.setEnd(reservation.getEnd());
-
-        } catch (NullDatesException | NullStartException | NullEndException |
-                PassedStartDateException | PassedStartTimeException | InvalidEndDateException | InvalidEndTimeException e) {
+        } catch (NullDatesException | NullStartException | NullEndException | PassedStartDateException | PassedStartTimeException | InvalidEndDateException | InvalidEndTimeException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.startDateLayout);
         }
-
         // reset spinners data
         this.placeLayout.getEditText().setError(null);
         this.placeLayout.setError(null);
@@ -418,14 +283,12 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         this.participantsLayout.getEditText().setError(null);
         this.participantsLayout.setError(null);
         this.formViewModel.getParticipants().getValue().clear();
-
         try {
             // Observe data for place spinner
             this.planningViewModel.getAvailablePlaces(reservation).observe(this, availablePlaces -> {
                 this.placeSpinner.setAdapter(new PlaceArrayAdapter(this, 0, availablePlaces));
                 this.formViewModel.setPlace(availablePlaces.get(0));
             });
-
             // Observe data to set defaut selected participants
             this.planningViewModel.getAvailableParticipants(reservation).observe(this, availableParticipants -> {
                 this.formViewModel.getParticipants().getValue().add(availableParticipants.get(0));
@@ -437,27 +300,22 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
             this.errorHandler.signalError(this.errorHandler.getMessage(e), this.placeLayout);
         } catch (UnavailablePlacesException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(e), this.placeLayout);
-        }  catch (EmptyAvailableParticipantsException e) {
+        } catch (EmptyAvailableParticipantsException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(e), this.participantsLayout);
         }
-
         // Observe selected for place spinner
         this.formViewModel.getPlace().observe(this, selectedPlace -> {
             if(selectedPlace != null) {
                 this.placeSpinner.setText(selectedPlace.getName());
             }
         });
-
         // Observe selected for participants spinner
-        this.formViewModel.getParticipants().observe(this, selectedParticipants -> {
-            this.participantsSpinner.setText(this.getParticipantsAsString(selectedParticipants));
-        });
+        this.formViewModel.getParticipantsNames().observe(this, string -> this.participantsSpinner.setText(string));
     }
 
     private void onReserve() {
         try {
             this.getAvailableData(new Reservation(this.formViewModel.getStart().getValue(), this.formViewModel.getEnd().getValue()));
-
         } catch (NullDatesException | NullStartException | NullEndException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(new NullDatesException()), this.startDateLayout);
         } catch (PassedDatesException | PassedStartException e) {
@@ -473,7 +331,6 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
             this.formViewModel.setStart(next.getStart());
             this.formViewModel.setEnd(next.getEnd());
             this.onReserve();
-
         } catch (NullReservationException | NullStartException | NullEndException | PassedDatesException | PassedStartException | PassedStartDateException | PassedStartTimeException | InvalidEndException | InvalidEndDateException | InvalidEndTimeException | NullDatesException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.startDateLayout);
         }
@@ -484,9 +341,7 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
             this.formViewModel.save();
             Intent intent = new Intent(this, MainActivity.class);
             this.startActivity(intent);
-
-        } catch (NullStartException | NullEndException | NullDatesException |
-                PassedDatesException | PassedStartException | InvalidEndException e) {
+        } catch (NullStartException | NullEndException | NullDatesException | PassedDatesException | PassedStartException | InvalidEndException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.startDateLayout);
         } catch (EmptySubjectException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(e), this.subject);
@@ -496,8 +351,6 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
             this.errorHandler.signalError(this.errorHandler.getMessage(e), this.participantsLayout);
         } catch (NullReunionException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(e), this.saveButton);
-        } catch (UnavailableException e) {
-            e.printStackTrace(); // TODO
         }
     }
 }

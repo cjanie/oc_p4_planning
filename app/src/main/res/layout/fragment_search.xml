@@ -47,7 +47,7 @@
                 android:id="@+id/search_by_place_clear_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_clear_24"
+                android:src="@drawable/ic_baseline_clear_24_red"
                 android:layout_margin="@dimen/margin"
                 app:layout_constraintBottom_toBottomOf="@+id/search_place_spinner_fragment"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin"
-                android:src="@drawable/ic_baseline_clear_24"
+                android:src="@drawable/ic_baseline_clear_24_red"
                 app:layout_constraintBottom_toBottomOf="@+id/reunion_start_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -99,7 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin"
-            android:src="@drawable/ic_baseline_clear_24"
+            android:src="@drawable/ic_baseline_clear_24_red"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_by_date_layout" />

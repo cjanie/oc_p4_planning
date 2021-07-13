@@ -50,7 +50,7 @@ public class SearchViewModel extends ViewModel {
     }
 
     public LiveData<List<Reunion>> searchReunionsByDate(LocalDate date) {
-        MutableLiveData<List<Reunion>> found = new MutableLiveData<>(new ArrayList());
+        MutableLiveData<List<Reunion>> found = new MutableLiveData<>(new ArrayList<>());
         for(Reunion reunion: this.allReunions.getValue()) {
             if(reunion.getStart().toLocalDate().isEqual(date)) {
                 found.getValue().add(reunion);

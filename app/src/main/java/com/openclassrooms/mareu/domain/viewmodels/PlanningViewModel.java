@@ -1,9 +1,14 @@
 package com.openclassrooms.mareu.domain.viewmodels;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.data.enums.DELAY;
 import com.openclassrooms.mareu.data.api.ParticipantService;
 import com.openclassrooms.mareu.data.api.PlaceService;
@@ -27,7 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlanningViewModel extends ViewModel {
+public class PlanningViewModel extends AndroidViewModel {
 
     final private PlaceService placeService;
 
@@ -35,7 +40,8 @@ public class PlanningViewModel extends ViewModel {
 
     final private ReunionService reunionService;
 
-    public PlanningViewModel() {
+    public PlanningViewModel(@NonNull Application application) {
+        super(application);
         this.placeService = PlaceService.getInstance();
         this.participantService = ParticipantService.getInstance();
         this.reunionService = ReunionService.getInstance();
@@ -47,6 +53,25 @@ public class PlanningViewModel extends ViewModel {
 
     public LiveData<List<Participant>> getAllParticipants() {
         return this.participantService.getParticipants();
+    }
+
+    public LiveData<String[]> getParticipantsLabels(@NonNull List<Participant> participants, @NonNull Reservation reservation) {
+        String[] array = new String[participants.size()];
+        if(!participants.isEmpty()) {
+            List<String> labels = new ArrayList<>(); // Prepare labels as list first
+            for (Participant participant : participants) {
+                StringBuilder stringBuilder = new StringBuilder("");
+                stringBuilder.append(participant.getFirstName() + " : ");
+                if (participant.isAvailable(reservation)) {
+                    stringBuilder.append(this.getApplication().getString(R.string.available));
+                } else {
+                    stringBuilder.append(this.getApplication().getString(R.string.unavailable));
+                }
+                labels.add(stringBuilder.toString());
+            }
+            labels.toArray(array); // Converts list to array
+        }
+        return new MutableLiveData<>(array);
     }
 
     public LiveData<List<Reunion>> getAllReunions() {
@@ -108,42 +133,6 @@ public class PlanningViewModel extends ViewModel {
         LocalDateTime nextStart = current.getEnd().plusMinutes(DELAY.INTER_REUNIONS.getMinutes());
         Reservation next = new Reservation(nextStart, nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
         return new MutableLiveData<>(next);
-
-        /*
-        List<Reunion> reunions = this.getAllReunions().getValue();
-
-        List<LocalDateTime> ends = new ArrayList<>();
-        for(int i=0; i< reunions.size(); i++) {
-            Reunion reunion = reunions.get(i);
-            if(ends.isEmpty()) {
-                ends.add(reunion.getEnd());
-            } else {
-                if(reunion.getEnd().isEqual(ends.get(ends.size() - 1))
-                        || reunion.getEnd().isAfter(ends.get(ends.size() - 1))) {
-                    ends.add(reunion.getEnd());
-                } else if(reunion.getEnd().isBefore(ends.get(0))) {
-                    ends.add(0, reunion.getEnd());
-                } else {
-                    for(int j=0; j<ends.size(); j++) {
-                        if(reunion.getEnd().isEqual(ends.get(j)) || reunion.getEnd().isAfter(ends.get(j))) {
-                            ends.add(j + 1, reunion.getEnd());
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        LocalDateTime nextStart = null;
-        if(ends.iterator().hasNext()) {
-            nextStart = ends.iterator().next().plusMinutes(DELAY.INTER_REUNIONS.getMinutes());
-        } else {
-            nextStart = current.getStart();
-        }
-        LocalDateTime nextEnd = nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes());
-
-        return new MutableLiveData<>(new Reservation(nextStart, nextEnd));
-
-         */
     }
 
     public void removeReunion(Reunion reunion) throws NullReunionException {

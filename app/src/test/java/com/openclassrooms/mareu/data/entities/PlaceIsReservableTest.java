@@ -7,6 +7,7 @@ import com.openclassrooms.mareu.data.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.data.exceptions.NullStartException;
 import com.openclassrooms.mareu.data.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartException;
+import com.openclassrooms.mareu.data.exceptions.UnavailableException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -73,33 +74,33 @@ public class PlaceIsReservableTest {
         assertFalse(place.isAvailable(new Reservation(this.now.plusHours(4).plusMinutes(30), this.now.plusHours(6).plusMinutes(30))));
         assertFalse(place.isAvailable(new Reservation(this.now.plusHours(3), this.now.plusHours(7))));
     }
-
+ */
     @Test
-    public void placeReservationsShouldBeSorted() {
+    public void placeReservationsShouldBeSorted() throws UnavailableException {
         Place place = new Place();
-        place.addReservationRespectingAscendantOrderOfTime(this.resAt5);
+        place.reserve(this.resAt5);
         assert(place.getReservations().size() == 1);
-        place.addReservationRespectingAscendantOrderOfTime(this.resAt3);
+        place.reserve(this.resAt3);
         assert(place.getReservations().size() == 2);
         assert(place.getReservations().get(0).equals(this.resAt3));
-        place.addReservationRespectingAscendantOrderOfTime(this.resAt7);
+        place.reserve(this.resAt7);
         assert(place.getReservations().size() == 3);
         assert(place.getReservations().get(2).equals(this.resAt7));
-        place.addReservationRespectingAscendantOrderOfTime(this.resAt1);
+        place.reserve(this.resAt1);
         assert(place.getReservations().get(0).equals(this.resAt1));
-        place.addReservationRespectingAscendantOrderOfTime(this.resAt2);
+        place.reserve(this.resAt2);
         assert(place.getReservations().get(1).equals(this.resAt2));
         assert(place.getReservations().get(2).equals(this.resAt3));
-        place.addReservationRespectingAscendantOrderOfTime(resAt4);
+        place.reserve(resAt4);
         assert(place.getReservations().get(3).equals(resAt4));
-        place.addReservationRespectingAscendantOrderOfTime(this.resAt6);
+        place.reserve(this.resAt6);
         assert(place.getReservations().get(5).equals(this.resAt6));
         assert(place.getReservations().get(6).equals(this.resAt7));
     }
-     */
+
 
     @Test
-    public void reserveWithSuccessShouldAddReservation() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException {
+    public void reserveWithSuccessShouldAddReservation() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException, UnavailableException {
         Place place = new Place();
         place.reserve(this.resAt7);
         place.reserve(new Reservation(this.now.plusHours(4), this.now.plusHours(5)));
@@ -108,8 +109,8 @@ public class PlaceIsReservableTest {
         assert(place.getReservations().size() == 3);
     }
 
-    @Test(expected = NullPlaceException.class)
-    public void reserveWithoutSuccessShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException {
+    @Test(expected = UnavailableException.class)
+    public void reserveWithoutSuccessShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException, UnavailableException {
         Place place = new Place();
         place.reserve(this.resAt7);
         place.reserve(this.resAt4);
@@ -118,7 +119,7 @@ public class PlaceIsReservableTest {
     }
 
     @Test
-    public void resetPlaceAvailableAtDefinedTimeShouldRemoveReservationStartingAtThisTime() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException {
+    public void resetPlaceAvailableAtDefinedTimeShouldRemoveReservationStartingAtThisTime() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, NullPlaceException, UnavailableException {
         Place place = new Place();
         Reservation reservation = new Reservation(this.now.plusHours(2), this.now.plusHours(3));
         place.reserve(reservation);

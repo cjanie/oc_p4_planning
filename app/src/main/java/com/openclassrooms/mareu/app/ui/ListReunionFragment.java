@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.openclassrooms.mareu.R;
+import com.openclassrooms.mareu.app.adapters.ListReunionRecyclerViewAdapter;
 import com.openclassrooms.mareu.data.entities.Reunion;
 import com.openclassrooms.mareu.domain.events.DeleteReunionEvent;
 import com.openclassrooms.mareu.domain.events.InitSearchEvent;

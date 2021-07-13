@@ -12,6 +12,8 @@ import com.openclassrooms.mareu.data.exceptions.UnavailableException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ReunionService {
@@ -58,26 +60,28 @@ public class ReunionService {
         }
     }
 
-    public void addReunion(Reunion reunion) throws NullReunionException, NullPlaceException, EmptySelectedParticipantsException, UnavailableException {
+    public void addReunion(Reunion reunion) throws NullReunionException, NullPlaceException, EmptySelectedParticipantsException {
         if(reunion == null) {
             throw new NullReunionException();
         } else {
-            System.out.println("REUNION SERVICE ADD REUNION");
-            if(reunion.getPlace() == null) {
-                System.out.println("reunion place is null");
-            } else {
-                System.out.println("reunion place: " + reunion.getPlace().getName());
-            }
             if(reunion.getPlace() == null) {
                 throw new NullPlaceException();
             } else {
-                reunion.getPlace().reserve(reunion);
+                try {
+                    reunion.getPlace().reserve(reunion);
+                } catch (UnavailableException e) {
+                    throw new NullPlaceException();
+                }
             }
             if(reunion.getParticipants().isEmpty()) {
                 throw new EmptySelectedParticipantsException();
             } else {
                 for(Participant participant: reunion.getParticipants()) {
-                    participant.assign(reunion);
+                    try {
+                        participant.assign(reunion);
+                    } catch (UnavailableException e) {
+                        throw new EmptySelectedParticipantsException();
+                    }
                 }
             }
 
@@ -92,22 +96,8 @@ public class ReunionService {
             if(this.reunions.getValue().isEmpty()) {
                 this.reunions.getValue().add(reunion);
             } else { // to make a sorted list of reservations
-
-                LocalDateTime earlierStart = this.reunions.getValue().get(0).getStart();
-                LocalDateTime latestStart = this.reunions.getValue().get(this.reunions.getValue().size() - 1).getStart();
-
-                if(reunion.getStart().isEqual(latestStart) || reunion.getStart().isAfter(latestStart)) {
-                    this.reunions.getValue().add(reunion);
-                } else if(reunion.getStart().isBefore(earlierStart)) {
-                    this.reunions.getValue().add(0, reunion);
-                } else {
-                    for(int i = 0; i<this.reunions.getValue().size(); i++) {
-                        if(this.reunions.getValue().get(i).getStart().isEqual(reunion.getStart()) || this.reunions.getValue().get(i).getStart().isAfter(reunion.getStart())) {
-                            this.reunions.getValue().add(i, reunion);
-                            break;
-                        }
-                    }
-                }
+                this.reunions.getValue().add(reunion);
+                Collections.sort(this.reunions.getValue(), (a, b) -> a.getStart().compareTo(b.getStart())); // With API 24: this.reunions.getValue().sort(Comparator.comparing(Reunion::getStart));
             }
         }
     }

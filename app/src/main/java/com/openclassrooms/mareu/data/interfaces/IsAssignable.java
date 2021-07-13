@@ -6,7 +6,7 @@ import com.openclassrooms.mareu.data.exceptions.UnavailableException;
 
 public interface IsAssignable extends IsAvailable {
 
-    void assign(Reunion reunion) throws NullPlaceException, UnavailableException;
+    void assign(Reunion reunion) throws UnavailableException;
 
     void removeAssignation(Reunion reunion);
 

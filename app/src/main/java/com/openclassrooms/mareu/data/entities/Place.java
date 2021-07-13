@@ -3,6 +3,7 @@ package com.openclassrooms.mareu.data.entities;
 import androidx.annotation.NonNull;
 
 import com.openclassrooms.mareu.data.exceptions.UnavailableException;
+import com.openclassrooms.mareu.data.exceptions.UnavailablePlacesException;
 import com.openclassrooms.mareu.data.interfaces.IsReservable;
 
 public class Place extends HasPlanning implements IsReservable {

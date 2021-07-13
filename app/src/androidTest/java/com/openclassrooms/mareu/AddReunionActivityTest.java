@@ -56,8 +56,7 @@ public class AddReunionActivityTest {
     private ActivityScenario<AddReunionActivity> activityScenario;
 
     private LocalDateTime now;
-    
-    private int incrementDay;
+
 
     @Rule
     public ActivityScenarioRule<AddReunionActivity> activityScenarioRule =
@@ -67,7 +66,6 @@ public class AddReunionActivityTest {
     public void setUp() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
         this.activityScenario = this.activityScenarioRule.getScenario();
         this.now = LocalDateTime.now();
-        this.incrementDay = 1;
     }
 
     // Get ACTIVITY for RESSOURCES
@@ -373,8 +371,40 @@ public class AddReunionActivityTest {
         onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount(size + 1)));
     }
 
+    @Test
+    public void searchByPlaceWithSuccess() {
+        this.saveReunionAndGetListSize(12, 1,   3);
+        onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount(1)));
+        onView(ViewMatchers.withId(R.id.action_search)).perform(click());
+        onView(ViewMatchers.withId(R.id.search_by_place_layout)).perform(click());
+        onData(equalTo(PlaceService.LIST_OF_PLACES.get(1))).inRoot(RootMatchers.isPlatformPopup()).perform(click());
+        onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount( 1)));
+        onView(ViewMatchers.withId(R.id.search_by_place_layout)).perform(click());
+        onData(equalTo(PlaceService.LIST_OF_PLACES.get(0))).inRoot(RootMatchers.isPlatformPopup()).perform(click());
+        onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount( 0)));
+        onView(ViewMatchers.withId(R.id.action_search)).perform(click());
+    }
+
+    @Test
+    public void searchByDateWithSuccess() {
+        LocalDate startDate = this.now.plusDays(10).toLocalDate();
+        LocalDate next = startDate.plusDays(1);
+        this.saveReunionAndGetListSize(10, 1,   3);
+        onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount(1)));
+        onView(ViewMatchers.withId(R.id.action_search)).perform(click());
+        onView(ViewMatchers.withId(R.id.search_by_date_layout)).perform(click());
+        onView(isAssignableFrom(DatePicker.class)).perform(PickerActions.setDate(startDate.getYear(), startDate.getMonthValue(), startDate.getDayOfMonth()));
+        onView(withId(android.R.id.button1)).perform(click()); // positive button
+        onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount( 1)));
+        onView(ViewMatchers.withId(R.id.search_by_date_layout)).perform(click());
+        onView(isAssignableFrom(DatePicker.class)).perform(PickerActions.setDate(next.getYear(), next.getMonthValue(), next.getDayOfMonth()));
+        onView(withId(android.R.id.button1)).perform(click()); // positive button
+        onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount( 0)));
+        onView(ViewMatchers.withId(R.id.action_search)).perform(click());
+    }
+
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (this.activityScenario != null) {
             this.activityScenario.close();
         }

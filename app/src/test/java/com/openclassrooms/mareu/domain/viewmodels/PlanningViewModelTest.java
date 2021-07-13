@@ -19,6 +19,7 @@ import com.openclassrooms.mareu.data.exceptions.NullReunionException;
 import com.openclassrooms.mareu.data.exceptions.NullStartException;
 import com.openclassrooms.mareu.data.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartException;
+import com.openclassrooms.mareu.data.exceptions.UnavailableException;
 import com.openclassrooms.mareu.data.exceptions.UnavailablePlacesException;
 
 import org.junit.After;
@@ -94,7 +95,7 @@ public class PlanningViewModelTest {
 
     @DisplayName("get available places throws unavailable places exception")
     @Test(expected = UnavailablePlacesException.class)
-    public void getAvailablePlacesValueShouldBeAList() throws NullDatesException, PassedDatesException, InvalidEndException, NullStartException, NullEndException, PassedStartException, NullReservationException, UnavailablePlacesException, NullPlaceException {
+    public void getAvailablePlacesValueShouldBeAList() throws NullDatesException, PassedDatesException, InvalidEndException, NullStartException, NullEndException, PassedStartException, NullReservationException, UnavailablePlacesException, NullPlaceException, UnavailableException {
         Reservation reservation = this.generateReservation();
         // List at init should be the complete list of places
         List<Place> expectedAvailablePlaces = PlaceService.LIST_OF_PLACES;

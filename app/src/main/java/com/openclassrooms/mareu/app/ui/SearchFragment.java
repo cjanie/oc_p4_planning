@@ -140,7 +140,6 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
     private void resetPlace() {
         this.searchViewModel.setSelectedPlace(null);
         this.placeSpinner.setText("");
-
         if(searchViewModel.getSelectedDate().getValue() == null) {
             EventBus.getDefault().post(new InitSearchEvent());
         } else {
@@ -149,8 +148,8 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
     }
 
     private void resetDate() {
-        searchViewModel.setSelectedDate(null);
-        selectedDate.setText("");
+        this.searchViewModel.setSelectedDate(null);
+        this.selectedDate.setText("");
         if(searchViewModel.getSelectedPlace().getValue() == null) {
             EventBus.getDefault().post(new InitSearchEvent());
         } else {
@@ -163,6 +162,5 @@ public class SearchFragment extends Fragment implements AdapterView.OnItemClickL
         this.resetDate();
         EventBus.getDefault().post(new InitSearchEvent()); // To reset the list
     }
-
-
+    
 }
