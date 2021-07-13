@@ -5,7 +5,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import com.openclassrooms.mareu.data.api.ParticipantService;
 import com.openclassrooms.mareu.data.api.PlaceService;
 import com.openclassrooms.mareu.data.entities.Participant;
+import com.openclassrooms.mareu.data.entities.Reservation;
 import com.openclassrooms.mareu.data.entities.Reunion;
+import com.openclassrooms.mareu.data.enums.DELAY;
 import com.openclassrooms.mareu.data.exceptions.EmptyAvailableParticipantsException;
 import com.openclassrooms.mareu.data.exceptions.EmptySelectedParticipantsException;
 import com.openclassrooms.mareu.data.exceptions.EmptySubjectException;
@@ -35,6 +37,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,10 +212,6 @@ public class FormViewModelTest {
         assertEquals(changeSubject, this.formViewModel.getSubject().getValue());
     }
 
-
-
-
-
     // CREATE REUNION
     @DisplayName("create reunion with success")
     @Test
@@ -267,6 +266,15 @@ public class FormViewModelTest {
         this.formViewModel.setSubject("");
         this.formViewModel.save();
     }
+
+    @DisplayName("forward")
+    @Test
+    public void forwardWithSuccess() throws PassedDatesException, InvalidEndException, PassedStartException, NullStartException, NullEndException, NullDatesException, NullReservationException, UnavailablePlacesException, NullReunionException, NullPlaceException, EmptySelectedParticipantsException {
+        LocalDateTime currentEnd = this.formViewModel.getEnd().getValue();
+        this.formViewModel.forward();
+        assertEquals(currentEnd.plusMinutes(DELAY.INTER_REUNIONS.getMinutes()), this.formViewModel.getStart().getValue());
+    }
+
 
     @After
     public void tearDown() {

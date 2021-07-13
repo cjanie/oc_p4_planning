@@ -4,9 +4,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,12 +14,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.app.MainActivity;
 import com.openclassrooms.mareu.app.adapters.PlaceArrayAdapter;
-import com.openclassrooms.mareu.data.entities.Participant;
 import com.openclassrooms.mareu.data.entities.Place;
 import com.openclassrooms.mareu.data.entities.Reservation;
 import com.openclassrooms.mareu.data.exceptions.EmptyAvailableParticipantsException;
@@ -44,6 +39,8 @@ import com.openclassrooms.mareu.data.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartException;
 import com.openclassrooms.mareu.app.utils.CustomDateTimeFormatter;
 import com.openclassrooms.mareu.app.utils.ErrorHandler;
+import com.openclassrooms.mareu.domain.events.SetParticipantsEvent;
+import com.openclassrooms.mareu.domain.events.SetDateTimeEvent;
 import com.openclassrooms.mareu.domain.events.SetEndEvent;
 import com.openclassrooms.mareu.domain.events.SetStartEvent;
 import com.openclassrooms.mareu.domain.viewmodels.FormViewModel;
@@ -53,7 +50,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,20 +62,12 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
 
     @BindView(R.id.reunion_start_date_layout)
     TextInputLayout startDateLayout;
-    @BindView(R.id.reunion_start_date)
-    TextInputEditText startDateInput;
     @BindView(R.id.reunion_start_time_layout)
     TextInputLayout startTimeLayout;
-    @BindView(R.id.reunion_start_time)
-    TextInputEditText startTimeInput;
     @BindView(R.id.reunion_end_date_layout)
     TextInputLayout endDateLayout;
-    @BindView(R.id.reunion_end_date)
-    TextInputEditText endDateInput;
     @BindView(R.id.reunion_end_time_layout)
     TextInputLayout endTimeLayout;
-    @BindView(R.id.reunion_end_time)
-    TextInputEditText endTimeInput;
     @BindView(R.id.reunion_place_layout)
     TextInputLayout placeLayout;
     @BindView(R.id.reunion_place_spinner)
@@ -109,13 +97,13 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
 
         ButterKnife.bind(this);
         this.startDateLayout.setOnClickListener(this);
-        this.startDateInput.setOnClickListener(this);
+        this.startDateLayout.getEditText().setOnClickListener(this);
         this.startTimeLayout.setOnClickListener(this);
-        this.startTimeInput.setOnClickListener(this);
+        this.startTimeLayout.getEditText().setOnClickListener(this);
         this.endDateLayout.setOnClickListener(this);
-        this.endDateInput.setOnClickListener(this);
+        this.endDateLayout.getEditText().setOnClickListener(this);
         this.endTimeLayout.setOnClickListener(this);
-        this.endTimeInput.setOnClickListener(this);
+        this.endTimeLayout.getEditText().setOnClickListener(this);
         this.placeSpinner.setOnItemClickListener(this);
         this.participantsSpinner.setOnClickListener(this);
         this.subject.getEditText().addTextChangedListener(this);
@@ -140,7 +128,7 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
             this.endTimeLayout.getEditText().setText(formatter.formatTimeToString(dateTime.toLocalTime()));
             this.endTimeLayout.setError(null);
         });
-        this.onReserve(); // Creates reservation then loads available places and participants
+        this.getAvailableData();
     }
 
     @Override
@@ -168,20 +156,20 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onClick(View v) {
-        if(v == this.startDateLayout || v == this.startDateInput) {
+        if(v == this.startDateLayout || v == this.startDateLayout.getEditText()) {
             new StartPicker(this, this.formViewModel.getStart().getValue()).showDatePickerDialog();
-        } else if(v == this.startTimeLayout || v == this.startTimeInput) {
+        } else if(v == this.startTimeLayout || v == this.startTimeLayout.getEditText()) {
             new StartPicker(this, this.formViewModel.getStart().getValue()).showTimePickerDialog();
-        } else if(v == this.endDateLayout || v == this.endDateInput) {
+        } else if(v == this.endDateLayout || v == this.endDateLayout.getEditText()) {
             new EndPicker(this, this.formViewModel.getEnd().getValue()).showDatePickerDialog();
-        } else if(v == this.endTimeLayout || v == this.endTimeInput) {
+        } else if(v == this.endTimeLayout || v == this.endTimeLayout.getEditText()) {
             new EndPicker(this, this.formViewModel.getEnd().getValue()).showTimePickerDialog();
         } else if(v == this.participantsSpinner) {
             this.showParticipantsDialog();
         } else if(v == this.saveButton) {
             this.onSave();
         } else if(v == this.nextButton) {
-            this.onNextReservation();
+            this.onForward();
         }
     }
 
@@ -198,10 +186,14 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
     }
 
     @Subscribe
-    public void setStart(SetStartEvent event) {
+    public void setDateTime(SetDateTimeEvent event) {
         try {
-            this.formViewModel.setStart(event.start);
-            this.onReserve();
+            if(event instanceof SetStartEvent) {
+                this.formViewModel.setStart(event.dateTime);
+            } else if(event instanceof SetEndEvent) {
+                this.formViewModel.setEnd(event.dateTime);
+            }
+            this.getAvailableData();
         } catch (NullDatesException | NullStartException | NullEndException e) {
             errorHandler.signalError(errorHandler.getMessage(new NullDatesException()), startDateLayout);
         } catch (PassedStartDateException e) {
@@ -216,20 +208,11 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
     }
 
     @Subscribe
-    public void setEnd(SetEndEvent event) {
-        try {
-            formViewModel.setEnd(event.end);
-            onReserve();
-        } catch (NullDatesException | NullStartException | NullEndException e) {
-            errorHandler.signalError(errorHandler.getMessage(new NullDatesException()), startDateLayout);
-        } catch (InvalidEndDateException e) {
-            errorHandler.signalError(errorHandler.getMessage(e), endDateLayout);
-        } catch (InvalidEndTimeException e) {
-            errorHandler.signalError(errorHandler.getMessage(e), endTimeLayout);
-        }
+    public void setParticipants(SetParticipantsEvent event) {
+        this.formViewModel.setParticipants(event.selected);
+        this.formViewModel.getParticipantsNames().observe(this, string -> this.participantsSpinner.setText(string));
     }
 
-    // PARTICIPANTS DIALOG // https://www.geeksforgeeks.org/alert-dialog-with-multipleitemselection-in-android/
     private void showParticipantsDialog() {
         this.planningViewModel.getAllParticipants().observe(this, allParticipants -> {
             // Prepare items
@@ -245,36 +228,11 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
                     checkedArray[i] = true;
                 }
             }
-            List<Participant> selected = new ArrayList<>();
-            // Build the dialog
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-            dialogBuilder.setTitle(getString(R.string.select_participants));
-            dialogBuilder.setMultiChoiceItems(labels, checkedArray, (DialogInterface dialog, int which, boolean isChecked) -> checkedArray[which] = isChecked);
-            dialogBuilder.setPositiveButton(this.getString(R.string.done), (DialogInterface dialog, int which) -> {
-                for(int i=0; i<checkedArray.length; i++) {
-                    if(checkedArray[i]) {
-                        selected.add(allParticipants.get(i));
-                    }
-                }
-                this.formViewModel.setParticipants(selected);
-            });
-            dialogBuilder.setNegativeButton(this.getString(R.string.cancel), (DialogInterface dialog, int which) -> dialog.dismiss());
-            dialogBuilder.setNeutralButton(this.getString(R.string.clear), (DialogInterface dialog, int which) -> {
-                    selected.clear();
-                    formViewModel.setParticipants(selected);
-            });
-            Dialog dialog = dialogBuilder.create();
-            dialog.show();
+            new ParticipantsPicker(this, allParticipants, labels, checkedArray).showParticipantsPickerDialog();
         });
     }
 
-    private void getAvailableData(Reservation reservation) {
-        try {
-            this.formViewModel.setStart(reservation.getStart());
-            this.formViewModel.setEnd(reservation.getEnd());
-        } catch (NullDatesException | NullStartException | NullEndException | PassedStartDateException | PassedStartTimeException | InvalidEndDateException | InvalidEndTimeException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.startDateLayout);
-        }
+    private void getAvailableData() {
         // reset spinners data
         this.placeLayout.getEditText().setError(null);
         this.placeLayout.setError(null);
@@ -283,7 +241,9 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         this.participantsLayout.getEditText().setError(null);
         this.participantsLayout.setError(null);
         this.formViewModel.getParticipants().getValue().clear();
+
         try {
+            Reservation reservation = new Reservation(this.formViewModel.getStart().getValue(), this.formViewModel.getEnd().getValue());
             // Observe data for place spinner
             this.planningViewModel.getAvailablePlaces(reservation).observe(this, availablePlaces -> {
                 this.placeSpinner.setAdapter(new PlaceArrayAdapter(this, 0, availablePlaces));
@@ -296,8 +256,8 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
                     this.formViewModel.getParticipants().getValue().add(availableParticipants.get(1));
                 }
             });
-        } catch (NullReservationException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.placeLayout);
+        } catch (NullReservationException | NullDatesException | NullStartException | NullEndException | PassedDatesException | PassedStartException | InvalidEndException e) {
+            this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.placeLayout);
         } catch (UnavailablePlacesException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(e), this.placeLayout);
         } catch (EmptyAvailableParticipantsException e) {
@@ -313,27 +273,9 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         this.formViewModel.getParticipantsNames().observe(this, string -> this.participantsSpinner.setText(string));
     }
 
-    private void onReserve() {
-        try {
-            this.getAvailableData(new Reservation(this.formViewModel.getStart().getValue(), this.formViewModel.getEnd().getValue()));
-        } catch (NullDatesException | NullStartException | NullEndException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(new NullDatesException()), this.startDateLayout);
-        } catch (PassedDatesException | PassedStartException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(new PassedDatesException()), this.startDateLayout);
-        } catch (InvalidEndException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.endDateLayout);
-        }
-    }
-
-    private void onNextReservation() {
-        try {
-            Reservation next = this.planningViewModel.getNextAvailableReservation(new Reservation(this.formViewModel.getStart().getValue(), this.formViewModel.getEnd().getValue())).getValue();
-            this.formViewModel.setStart(next.getStart());
-            this.formViewModel.setEnd(next.getEnd());
-            this.onReserve();
-        } catch (NullReservationException | NullStartException | NullEndException | PassedDatesException | PassedStartException | PassedStartDateException | PassedStartTimeException | InvalidEndException | InvalidEndDateException | InvalidEndTimeException | NullDatesException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.startDateLayout);
-        }
+    private void onForward() {
+        this.formViewModel.forward();
+        this.getAvailableData();
     }
 
     private void onSave() {

@@ -2,11 +2,9 @@ package com.openclassrooms.mareu.domain.events;
 
 import java.time.LocalDateTime;
 
-public class SetStartEvent {
+public class SetStartEvent extends SetDateTimeEvent {
 
-    public LocalDateTime start;
-
-    public SetStartEvent(LocalDateTime start) {
-        this.start = start;
+    public SetStartEvent(LocalDateTime dateTime) {
+        super(dateTime);
     }
 }

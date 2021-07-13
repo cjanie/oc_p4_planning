@@ -1,5 +1,6 @@
 package com.openclassrooms.mareu.data.entities;
 
+import com.openclassrooms.mareu.app.utils.CustomDateTimeFormatter;
 import com.openclassrooms.mareu.data.enums.DELAY;
 import com.openclassrooms.mareu.data.exceptions.InvalidEndException;
 import com.openclassrooms.mareu.data.exceptions.NullDatesException;
@@ -18,9 +19,8 @@ public class Reservation {
     public Reservation(LocalDateTime start, LocalDateTime end)
             throws NullDatesException, NullStartException, NullEndException,
             PassedDatesException, PassedStartException, InvalidEndException {
-        LocalDateTime now = LocalDateTime.now();
         // Format now without seconds to make instantaneous reservation possible
-        now = LocalDateTime.now().minusMinutes(DELAY.INSTANTANEOUS_REUNION.getMinutes());
+        LocalDateTime now = LocalDateTime.now().minusMinutes(DELAY.INSTANTANEOUS_REUNION.getMinutes());
 
         if(start == null && end == null) { // case both dates null
             throw new NullDatesException();

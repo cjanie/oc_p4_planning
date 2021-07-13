@@ -115,41 +115,6 @@ public class PlanningViewModelTest {
         assertEquals(ParticipantService.LIST_OF_PARTICIPANTS, this.planningViewModel.getAllParticipants().getValue());
     }
 
-    @DisplayName("get next should return reservation")
-    @Test
-    public void getNextShoudReturnReservation() throws PassedDatesException, InvalidEndException, PassedStartException, NullStartException, NullEndException, NullDatesException, NullReservationException, UnavailablePlacesException, NullReunionException, NullPlaceException, EmptySelectedParticipantsException {
-
-        LocalDateTime tomorrowMorning = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(9, 0)); // Now is 09h00
-        Reservation current = new Reservation(tomorrowMorning, tomorrowMorning.plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
-
-        Reservation next = this.planningViewModel.getNextAvailableReservation(current).getValue();
-        assert(next.getStart().isEqual(current.getEnd().plusMinutes(DELAY.INTER_REUNIONS.getMinutes())));
-        /*
-        assert(this.planningViewModel.getNextAvailableReservation(current).getValue().getStart().isEqual(tomorrowMorning)); // At init
-
-        Reunion reunionNow = new Reunion(current.getStart(), current.getEnd()); // Reunion tomorrow morning 09h00-09h45
-        reunionNow.setPlace(PlaceService.LIST_OF_PLACES.get(0));
-        List<Participant> participants = new ArrayList<>();
-        participants.add(ParticipantService.LIST_OF_PARTICIPANTS.get(0));
-        reunionNow.setParticipants(participants);
-        ReunionService.getInstance().addReunion(reunionNow);
-
-        Reservation next = this.planningViewModel.getNextAvailableReservation(current).getValue();
-        assert(next.getStart().isEqual(current.getEnd().plusMinutes(DELAY.INTER_REUNIONS.getMinutes())));
-        assert(next.getEnd().isEqual(next.getStart().plusMinutes(DELAY.REUNION_DURATION.getMinutes())));
-
-        Reunion reunionNext = new Reunion(next.getStart(), next.getEnd());
-        reunionNext.setPlace(PlaceService.LIST_OF_PLACES.get(1));
-        reunionNext.setParticipants(participants);
-        ReunionService.getInstance().addReunion(reunionNext);
-
-
-        Reservation next2 = this.planningViewModel.getNextAvailableReservation(next).getValue();
-        assert(next2.getStart().isEqual(next.getEnd().plusMinutes(DELAY.INTER_REUNIONS.getMinutes())));
-        assert(next2.getEnd().isEqual(next2.getStart().plusMinutes(DELAY.REUNION_DURATION.getMinutes())));
-
-         */
-    }
 
     @After
     public void tearDown() {

@@ -126,15 +126,6 @@ public class PlanningViewModel extends AndroidViewModel {
         return availableParticipants;
     }
 
-    public LiveData<Reservation> getNextAvailableReservation(Reservation current) throws NullReservationException, InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException, PassedStartException {
-        if(current == null) {
-            throw new NullReservationException();
-        }
-        LocalDateTime nextStart = current.getEnd().plusMinutes(DELAY.INTER_REUNIONS.getMinutes());
-        Reservation next = new Reservation(nextStart, nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
-        return new MutableLiveData<>(next);
-    }
-
     public void removeReunion(Reunion reunion) throws NullReunionException {
         this.reunionService.removeReunion(reunion);
     }

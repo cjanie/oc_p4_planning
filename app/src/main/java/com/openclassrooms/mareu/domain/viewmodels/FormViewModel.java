@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.openclassrooms.mareu.R;
+import com.openclassrooms.mareu.app.utils.CustomDateTimeFormatter;
 import com.openclassrooms.mareu.data.enums.DELAY;
 import com.openclassrooms.mareu.data.api.ReunionService;
 import com.openclassrooms.mareu.data.entities.Participant;
@@ -21,6 +22,7 @@ import com.openclassrooms.mareu.data.exceptions.InvalidEndDateException;
 import com.openclassrooms.mareu.data.exceptions.InvalidEndException;
 import com.openclassrooms.mareu.data.exceptions.InvalidEndTimeException;
 import com.openclassrooms.mareu.data.exceptions.NullPlaceException;
+import com.openclassrooms.mareu.data.exceptions.NullReservationException;
 import com.openclassrooms.mareu.data.exceptions.NullReunionException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartDateException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartTimeException;
@@ -189,5 +191,12 @@ public class FormViewModel extends AndroidViewModel {
 
     public void save() throws NullPlaceException, InvalidEndException, NullEndException, PassedStartException, EmptySubjectException, NullStartException, PassedDatesException, EmptySelectedParticipantsException, NullDatesException, NullReunionException {
         this.reunionService.addReunion(this.createReunion());
+    }
+
+    public void forward() {
+        LocalDateTime nextStart = this.end.getValue().plusMinutes(DELAY.INTER_REUNIONS.getMinutes());
+        LocalDateTime nextEnd = nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes());
+        this.start.setValue(nextStart);
+        this.end.setValue(nextEnd);
     }
 }
