@@ -63,7 +63,7 @@ public class ReservationTest {
 
     @Test(expected = PassedStartException.class)
     public void reservationWithPassedStartShouldThrowException() throws PassedStartException, InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException {
-        new Reservation(this.start.minusMinutes(DELAY.INSTANTANEOUS_REUNION.getMinutes()), this.end);
+        new Reservation(LocalDateTime.now().minusMinutes(30), this.end);
 
     }
 

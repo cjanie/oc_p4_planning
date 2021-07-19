@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Maréu</string>
+    <string name="app_name">Ma réu</string>
     <string name="reunion">Réunion</string>
     <string name="reunion_subject">Sujet de la réunion</string>
     <string name="error_empty_subject">Erreur: le sujet de la réunion n\'est pas renseigné.</string>
@@ -12,6 +12,8 @@
     <string name="end_time">Heure de fin</string>
     <string name="end">Fin</string>
     <string name="select_date">Sélectionner la date</string>
+    <string name="select_start_date">Sélectionner la date de début</string>
+    <string name="select_end_date">Sélectionner la date de fin</string>
     <string name="select_start_time">Sélectionner l\'heure de début</string>
     <string name="select_end_time">Sélectionner l\'heure de fin</string>
     <string name="select_participants">Sélectionner les participants</string>

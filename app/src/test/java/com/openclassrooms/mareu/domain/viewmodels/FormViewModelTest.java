@@ -2,6 +2,8 @@ package com.openclassrooms.mareu.domain.viewmodels;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
+import com.openclassrooms.mareu.app.utils.CustomDateFormatterTest;
+import com.openclassrooms.mareu.app.utils.CustomDateTimeFormatter;
 import com.openclassrooms.mareu.data.api.ParticipantService;
 import com.openclassrooms.mareu.data.api.PlaceService;
 import com.openclassrooms.mareu.data.entities.Participant;
@@ -94,7 +96,7 @@ public class FormViewModelTest {
     public void setStartThenGetStartShouldReturnDateTime() throws PassedStartDateException, NullDatesException, PassedStartException, PassedDatesException, NullStartException, InvalidEndException, NullEndException, PassedStartTimeException, InvalidEndDateException, InvalidEndTimeException {
         LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
         this.formViewModel.setStart(tomorrow);
-        assertEquals(tomorrow, this.formViewModel.getStart().getValue());
+        assertEquals(new CustomDateTimeFormatter().roundUp(tomorrow), this.formViewModel.getStart().getValue());
     }
 
     @DisplayName("set start throws passed start date exception")
@@ -141,8 +143,8 @@ public class FormViewModelTest {
         LocalDateTime tomorrow = now.plusDays(2);
         this.formViewModel.setStart(now);
         this.formViewModel.setEnd(tomorrow);
-        assertEquals(now, this.formViewModel.getStart().getValue());
-        assertEquals(tomorrow, this.formViewModel.getEnd().getValue());
+        assertEquals(new CustomDateTimeFormatter().roundUp(now), this.formViewModel.getStart().getValue());
+        assertEquals(new CustomDateTimeFormatter().roundUp(tomorrow), this.formViewModel.getEnd().getValue());
     }
 
     @Test(expected = InvalidEndDateException.class)

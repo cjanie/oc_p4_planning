@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mareu</string>
+    <string name="app_name">Ma reu</string>
     <string name="reunion">Reunion</string>
     <string name="reunion_subject">Reunion subject</string>
     <string name="error_empty_subject">Error: subject field is empty.</string>
@@ -12,6 +12,8 @@
     <string name="end_time">End time</string>
     <string name="end">End</string>
     <string name="select_date">Select date</string>
+    <string name="select_start_date">Select start date</string>
+    <string name="select_end_date">Select end date</string>
     <string name="select_start_time">Select start time</string>
     <string name="select_end_time">Select end time</string>
     <string name="select_participants">Select participants</string>

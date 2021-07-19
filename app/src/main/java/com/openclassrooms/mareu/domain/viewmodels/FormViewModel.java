@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.openclassrooms.mareu.R;
+import com.openclassrooms.mareu.app.ui.StartPicker;
 import com.openclassrooms.mareu.app.utils.CustomDateTimeFormatter;
 import com.openclassrooms.mareu.data.enums.DELAY;
 import com.openclassrooms.mareu.data.api.ReunionService;
@@ -56,7 +57,7 @@ public class FormViewModel extends AndroidViewModel {
     public FormViewModel(@NonNull Application application) {
         super(application);
         this.reunionService = ReunionService.getInstance();
-        this.start = new MutableLiveData<>(LocalDateTime.now());
+        this.start = new MutableLiveData<>(new CustomDateTimeFormatter().roundUp(LocalDateTime.now()));
         this.end = new MutableLiveData<>(this.start.getValue().plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
         this.place = new MutableLiveData<>();
         this.participants = new MutableLiveData<>(new ArrayList<>());
@@ -72,7 +73,7 @@ public class FormViewModel extends AndroidViewModel {
         if(dateTime == null) {
             dateTime = LocalDateTime.now();
         }
-
+        dateTime = new CustomDateTimeFormatter().roundUp(dateTime);
         try {
             Reservation reservation = new Reservation(dateTime, dateTime.plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
             this.start.setValue(reservation.getStart());
@@ -100,11 +101,12 @@ public class FormViewModel extends AndroidViewModel {
 
     public void setEnd(LocalDateTime dateTime) throws NullDatesException, NullEndException, NullStartException, InvalidEndTimeException, InvalidEndDateException {
         if(this.start.getValue() == null) {
-            this.start.setValue(LocalDateTime.now());
+            this.start.setValue(new CustomDateTimeFormatter().roundUp(LocalDateTime.now()));
         }
         if(dateTime == null) {
             this.end.setValue(this.start.getValue().plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
         } else {
+            dateTime = new CustomDateTimeFormatter().roundUp(dateTime);
             try {
                 Reservation reservation = new Reservation(this.start.getValue(), dateTime);
                 this.start.setValue(reservation.getStart());
@@ -198,5 +200,15 @@ public class FormViewModel extends AndroidViewModel {
         LocalDateTime nextEnd = nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes());
         this.start.setValue(nextStart);
         this.end.setValue(nextEnd);
+    }
+
+    // Dialogs
+
+    public void showStartDateDialog() {
+        new StartPicker(this.getApplication(), this.start.getValue()).showDatePickerDialog();
+    }
+
+    public void showStartTimeDialog() {
+
     }
 }

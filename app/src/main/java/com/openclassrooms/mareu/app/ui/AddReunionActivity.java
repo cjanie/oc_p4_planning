@@ -4,11 +4,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -53,8 +55,9 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class AddReunionActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, TextWatcher, View.OnClickListener {
+public class AddReunionActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, TextWatcher {
 
     private FormViewModel formViewModel;
     private PlanningViewModel planningViewModel;
@@ -80,8 +83,6 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
     TextInputLayout subject;
     @BindView(R.id.save_reunion_button)
     Button saveButton;
-    @BindView(R.id.next_reservation_fab)
-    FloatingActionButton nextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,19 +97,9 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         this.errorHandler = new ErrorHandler(this);
 
         ButterKnife.bind(this);
-        this.startDateLayout.setOnClickListener(this);
-        this.startDateLayout.getEditText().setOnClickListener(this);
-        this.startTimeLayout.setOnClickListener(this);
-        this.startTimeLayout.getEditText().setOnClickListener(this);
-        this.endDateLayout.setOnClickListener(this);
-        this.endDateLayout.getEditText().setOnClickListener(this);
-        this.endTimeLayout.setOnClickListener(this);
-        this.endTimeLayout.getEditText().setOnClickListener(this);
         this.placeSpinner.setOnItemClickListener(this);
-        this.participantsSpinner.setOnClickListener(this);
         this.subject.getEditText().addTextChangedListener(this);
-        this.saveButton.setOnClickListener(this);
-        this.nextButton.setOnClickListener(this);
+
     }
 
     @Override
@@ -155,25 +146,6 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
     }
 
     @Override
-    public void onClick(View v) {
-        if(v == this.startDateLayout || v == this.startDateLayout.getEditText()) {
-            new StartPicker(this, this.formViewModel.getStart().getValue()).showDatePickerDialog();
-        } else if(v == this.startTimeLayout || v == this.startTimeLayout.getEditText()) {
-            new StartPicker(this, this.formViewModel.getStart().getValue()).showTimePickerDialog();
-        } else if(v == this.endDateLayout || v == this.endDateLayout.getEditText()) {
-            new EndPicker(this, this.formViewModel.getEnd().getValue()).showDatePickerDialog();
-        } else if(v == this.endTimeLayout || v == this.endTimeLayout.getEditText()) {
-            new EndPicker(this, this.formViewModel.getEnd().getValue()).showTimePickerDialog();
-        } else if(v == this.participantsSpinner) {
-            this.showParticipantsDialog();
-        } else if(v == this.saveButton) {
-            this.onSave();
-        } else if(v == this.nextButton) {
-            this.onForward();
-        }
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
@@ -213,7 +185,29 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         this.formViewModel.getParticipantsNames().observe(this, string -> this.participantsSpinner.setText(string));
     }
 
-    private void showParticipantsDialog() {
+    @OnClick(R.id.reunion_start_date)
+    public void showStartDateDialog() {
+        //this.formViewModel.showStartDateDialog();
+        new StartPicker(this, this.formViewModel.getStart().getValue()).showDatePickerDialog();
+    }
+
+    @OnClick(R.id.reunion_start_time)
+    public void showStartTimeDialog(){
+        new StartPicker(this, this.formViewModel.getStart().getValue()).showTimePickerDialog();
+    }
+
+    @OnClick(R.id.reunion_end_date)
+    public void showEndDatePickerDialog() {
+        new EndPicker(this, this.formViewModel.getEnd().getValue()).showDatePickerDialog();
+    }
+
+    @OnClick(R.id.reunion_end_time)
+    public void showEndTimePickerDialog() {
+        new EndPicker(this, this.formViewModel.getEnd().getValue()).showTimePickerDialog();
+    }
+
+    @OnClick(R.id.reunion_participants_spinner)
+    public void showParticipantsDialog() {
         this.planningViewModel.getAllParticipants().observe(this, allParticipants -> {
             // Prepare items
             String[] labels = new String[0];
@@ -230,6 +224,31 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
             }
             new ParticipantsPicker(this, allParticipants, labels, checkedArray).showParticipantsPickerDialog();
         });
+    }
+
+    @OnClick(R.id.next_reservation_fab)
+    public void onForward() {
+        this.formViewModel.forward();
+        this.getAvailableData();
+    }
+
+    @OnClick(R.id.save_reunion_button)
+    public void onSave() {
+        try {
+            this.formViewModel.save();
+            Intent intent = new Intent(this, MainActivity.class);
+            this.startActivity(intent);
+        } catch (NullStartException | NullEndException | NullDatesException | PassedDatesException | PassedStartException | InvalidEndException e) {
+            this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.startDateLayout);
+        } catch (EmptySubjectException e) {
+            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.subject);
+        } catch (NullPlaceException e) {
+            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.placeLayout);
+        } catch (EmptySelectedParticipantsException e) {
+            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.participantsLayout);
+        } catch (NullReunionException e) {
+            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.saveButton);
+        }
     }
 
     private void getAvailableData() {
@@ -273,26 +292,4 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         this.formViewModel.getParticipantsNames().observe(this, string -> this.participantsSpinner.setText(string));
     }
 
-    private void onForward() {
-        this.formViewModel.forward();
-        this.getAvailableData();
-    }
-
-    private void onSave() {
-        try {
-            this.formViewModel.save();
-            Intent intent = new Intent(this, MainActivity.class);
-            this.startActivity(intent);
-        } catch (NullStartException | NullEndException | NullDatesException | PassedDatesException | PassedStartException | InvalidEndException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.startDateLayout);
-        } catch (EmptySubjectException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.subject);
-        } catch (NullPlaceException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.placeLayout);
-        } catch (EmptySelectedParticipantsException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.participantsLayout);
-        } catch (NullReunionException e) {
-            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.saveButton);
-        }
-    }
 }

@@ -9,6 +9,7 @@ import com.openclassrooms.mareu.data.exceptions.EmptySubjectException;
 import com.openclassrooms.mareu.data.exceptions.ErrorException;
 import com.openclassrooms.mareu.data.exceptions.InvalidEndDateException;
 import com.openclassrooms.mareu.data.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.data.exceptions.InvalidEndTimeException;
 import com.openclassrooms.mareu.data.exceptions.NullDatesException;
 import com.openclassrooms.mareu.data.exceptions.NullEndException;
 import com.openclassrooms.mareu.data.exceptions.NullPlaceException;
@@ -16,6 +17,7 @@ import com.openclassrooms.mareu.data.exceptions.NullStartException;
 import com.openclassrooms.mareu.data.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartDateException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartException;
+import com.openclassrooms.mareu.data.exceptions.PassedStartTimeException;
 import com.openclassrooms.mareu.data.exceptions.UnavailablePlacesException;
 
 import org.junit.After;
@@ -122,8 +124,7 @@ public class ErrorHandlerTest {
     @DisplayName("InvalidEndTimeException expects message INVALID_END_TIME")
     @Test
     public void getMessageOfInvalidEnTimeExceptionReturnsInvalidEndTimeError() {
-        assertEquals(this.context.getString(R.string.error_invalid_end_time), this.INVALID_END_TIME);
-        assertEquals(this.INVALID_END_TIME, this.errorHandler.getMessage(new InvalidEndException()));
+        assertEquals(this.context.getString(R.string.error_invalid_end_time), this.errorHandler.getMessage(new InvalidEndTimeException()));
     }
 
     @DisplayName("NullDatesException expects message NO_START_DATE_SELECTED")
@@ -157,8 +158,7 @@ public class ErrorHandlerTest {
     @DisplayName("PassedDatesException expects error message PASSED_START_DATE")
     @Test
     public void getMessageOfPassedDatesExceptionReturnsPassedStartDateError() {
-        assertEquals(this.context.getString(R.string.error_passed_start_date), this.PASSED_START_DATE);
-        assertEquals(this.PASSED_START_DATE, this.errorHandler.getMessage(new PassedDatesException()));
+        assertEquals(this.context.getString(R.string.error_passed_dates), this.errorHandler.getMessage(new PassedDatesException()));
     }
 
     @DisplayName("PassedStartDateException expects error message PASSED_START_DATE")
@@ -171,8 +171,7 @@ public class ErrorHandlerTest {
     @DisplayName("PassedStartTimeException expects error message PASSED_START_TIME")
     @Test
     public void getMessageOfPassedStartTimeExceptionReturnsPassedStartTimeError() {
-        assertEquals(this.context.getString(R.string.error_passed_start_time), this.PASSED_START_TIME);
-        assertEquals(this.PASSED_START_TIME, this.errorHandler.getMessage(new PassedStartException()));
+        assertEquals(this.context.getString(R.string.error_passed_start_time), this.errorHandler.getMessage(new PassedStartTimeException()));
     }
 
     @DisplayName("UnavailablePlacesException expects error message NO_PLACE_AVAILABLE")

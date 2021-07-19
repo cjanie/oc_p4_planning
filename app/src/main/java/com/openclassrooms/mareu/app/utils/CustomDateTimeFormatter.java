@@ -19,37 +19,19 @@ public class CustomDateTimeFormatter {
         return this.formatDateToString(dateTime.toLocalDate()) + " "+ this.formatTimeToString(dateTime.toLocalTime());
     }
 
-    public LocalDateTime roundUpMinutes(LocalDateTime dateTime) {
-        LocalDateTime roundedUp = null;
-        int minute = dateTime.getMinute();
-        if(minute == 0) {
-            roundedUp = LocalDateTime.of(dateTime.toLocalDate(), LocalTime.of(dateTime.toLocalTime().getHour(), 0));
-        } else if(minute > 0 && minute <= 5) {
-            roundedUp = LocalDateTime.of(dateTime.toLocalDate(), LocalTime.of(dateTime.toLocalTime().getHour(), 5));
-        } else if(minute > 5 && minute <= 10) {
-            roundedUp = LocalDateTime.of(dateTime.toLocalDate(), LocalTime.of(dateTime.toLocalTime().getHour(), 10));
-        } else if(minute > 55 && minute < 60) {
-            roundedUp = LocalDateTime.of(dateTime.toLocalDate(), LocalTime.of(dateTime.toLocalTime().getHour() + 1, 0));
+    public LocalDateTime roundUp(LocalDateTime dateTime) {
+        return LocalDateTime.of(dateTime.toLocalDate(), LocalTime.of(dateTime.getHour(), 0))
+                .plusMinutes(roundUp(dateTime.getMinute()));
+    }
 
-        } else if(minute > 10 && minute < 55) {
-            int unity = Integer.parseInt(String.valueOf(minute).substring(1));
-            String decimal = String.valueOf(minute).substring(0,1);
-            if(unity == 0) {
-                unity = 0;
-                roundedUp = LocalDateTime.of(dateTime.toLocalDate(), LocalTime.of(dateTime.toLocalTime().getHour(),
-                        Integer.parseInt(decimal + unity)));
-            } else if(unity > 0 && unity <= 5) {
-                unity = 5;
-                roundedUp = LocalDateTime.of(dateTime.toLocalDate(), LocalTime.of(dateTime.toLocalTime().getHour(),
-                        Integer.parseInt(decimal + unity)));
-            } else if(unity > 5 && unity <= 9) {
-                unity = 0;
-                decimal = decimal + 1;
-                roundedUp = LocalDateTime.of(dateTime.toLocalDate(), LocalTime.of(dateTime.toLocalTime().getHour(),
-                        Integer.parseInt(decimal + unity)));
+    private int roundUp(int minutes) {
+        for(int i=0; i<12; i++) {
+            if(minutes > i*5) {
+                while(minutes < i*5 + 5)
+                    return i*5 + 5;
             }
         }
-        return roundedUp;
+        return minutes;
     }
 
 }

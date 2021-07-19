@@ -21,35 +21,37 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.time.LocalDateTime;
 
-public class EndPicker extends Dialog implements CustomDatePicker, CustomTimePicker {
+public class EndPicker implements CustomDatePicker, CustomTimePicker {
+
+    private Context context;
 
     private LocalDateTime defaultDateTime;
 
     public EndPicker(@NonNull Context context, @NonNull LocalDateTime defaultDateTime) {
-        super(context);
+        this.context = context;
         this.defaultDateTime = defaultDateTime;
     }
 
 
     @Override
     public void showDatePickerDialog() {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this.getContext(), (DatePicker view, int year, int month, int dayOfMonth) -> {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this.context, (DatePicker view, int year, int month, int dayOfMonth) -> {
             LocalDateTime selected = LocalDateTime.of(year, month + 1, dayOfMonth,
                     defaultDateTime.getHour(), defaultDateTime.getMinute());
             EventBus.getDefault().post(new SetEndEvent(selected));
         }, defaultDateTime.getYear(), defaultDateTime.getMonthValue() - 1, defaultDateTime.getDayOfMonth());
-        datePickerDialog.setTitle(this.getContext().getString(R.string.select_date));
+        datePickerDialog.setTitle(this.context.getString(R.string.select_end_date));
         datePickerDialog.show();
     }
 
     @Override
     public void showTimePickerDialog() {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this.getContext(), (TimePicker view, int hourOfDay, int minute) -> {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this.context, (TimePicker view, int hourOfDay, int minute) -> {
             LocalDateTime selected = LocalDateTime.of(defaultDateTime.getYear(), defaultDateTime.getMonthValue(), defaultDateTime.getDayOfMonth(),
                     hourOfDay, minute);
             EventBus.getDefault().post(new SetEndEvent(selected));
         }, defaultDateTime.getHour(), defaultDateTime.getMinute(), true);
-        timePickerDialog.setTitle(this.getContext().getString(R.string.select_end_time));
+        timePickerDialog.setTitle(this.context.getString(R.string.select_end_time));
         timePickerDialog.show();
     }
 

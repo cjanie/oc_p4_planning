@@ -34,59 +34,42 @@ import static org.junit.Assert.assertTrue;
 public class ReunionServiceTest {
 
     private ReunionService reunionService;
+    private LocalDateTime now;
 
     @Before
     public void setUp() {
-
         this.reunionService = ReunionService.getInstance();
+        this.now = LocalDateTime.now();
     }
 
-    private void initServices() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException {
-        if(!this.reunionService.getReunions().getValue().isEmpty()) {
-            for(Reunion reunion: this.reunionService.getReunions().getValue()) {
-                for(Place place: PlaceService.LIST_OF_PLACES) {
-                    place.removeReservation(reunion);
-                }
-                for(Participant participant: ParticipantService.LIST_OF_PARTICIPANTS) {
-                    participant.removeAssignation(reunion);
-                }
-            }
-            this.reunionService.getReunions().getValue().clear();
+    private Reunion createReunion(int plusDays, int indexOfPlace, int[] indicesOfParticipants, String subject) throws InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException, PassedStartException {
+        LocalDateTime start = this.now.plusDays(plusDays);
+        Reunion reunion = new Reunion(start, start.plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
+        reunion.setPlace(PlaceService.LIST_OF_PLACES.get(indexOfPlace));
+        for(int i=0; i<indicesOfParticipants.length; i++) {
+            reunion.getParticipants().add(ParticipantService.LIST_OF_PARTICIPANTS.get(indicesOfParticipants[i]));
         }
-    }
-
-    private Reunion generateReunionNow() throws InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException, PassedStartException {
-        LocalDateTime now = LocalDateTime.now();
-        Reunion reunion = new Reunion(now, now.plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
-        reunion.setPlace(PlaceService.LIST_OF_PLACES.get(0));
-        List<Participant> participants = new ArrayList<>();
-        participants.add(ParticipantService.LIST_OF_PARTICIPANTS.get(0));
-        reunion.setParticipants(participants);
-        reunion.setSubject("Maréu");
+        reunion.setSubject(subject);
         return reunion;
     }
 
     @Test
     public void addReunionShouldIncrementList() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException, NullPlaceException, NullReunionException, EmptySelectedParticipantsException {
-        this.initServices();
-        int count = 0;
-        this.reunionService.addReunion(this.generateReunionNow());
+        int count = this.reunionService.getReunions().getValue().size();
+        this.reunionService.addReunion(this.createReunion(20, 0, new int[] {3}, "réu"));
         assertEquals(count + 1, this.reunionService.getReunions().getValue().size());
     }
 
     @Test
     public void removeReunionShouldDecrementList() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException, NullPlaceException, NullReunionException, EmptySelectedParticipantsException {
-        this.initServices();
-        int count = 0;
+        int count = this.reunionService.getReunions().getValue().size();
         // Add reunion then remove it
-        Reunion reunion = this.generateReunionNow();
+        Reunion reunion = this.createReunion(21, 0, new int[] {3}, "réu");
         this.reunionService.addReunion(reunion);
-        assertTrue(this.reunionService.getReunions().getValue().contains(reunion));
         count = count + 1;
         assertEquals(count, this.reunionService.getReunions().getValue().size());
         // Remove
         this.reunionService.removeReunion(reunion);
-        assertFalse(this.reunionService.getReunions().getValue().contains(reunion));
         count = count - 1;
         assertEquals(count, this.reunionService.getReunions().getValue().size());
     }
@@ -94,8 +77,7 @@ public class ReunionServiceTest {
     // Test CRUDPlanning
     @Test
     public void removeReunionShouldResetAvailablesPlaces() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException, NullPlaceException, NullReunionException, EmptySelectedParticipantsException {
-        this.initServices();
-        Reunion reunion = this.generateReunionNow();
+        Reunion reunion = this.createReunion(22, 0, new int[] {3}, "réu");;
         this.reunionService.addReunion(reunion);
         this.reunionService.removeReunion(reunion);
         assertFalse(reunion.getPlace().getReservations().contains(reunion));
@@ -103,8 +85,7 @@ public class ReunionServiceTest {
 
     @Test
     public void removeReunionShouldResetAvailablesParticipants() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException, NullPlaceException, NullReunionException, EmptySelectedParticipantsException {
-        this.initServices();
-        Reunion reunion = this.generateReunionNow();
+        Reunion reunion = this.createReunion(23, 0, new int[] {3}, "réu");
         this.reunionService.addReunion(reunion);
         this.reunionService.removeReunion(reunion);
         for(Participant participant: reunion.getParticipants()) {
@@ -114,16 +95,14 @@ public class ReunionServiceTest {
 
     @Test
     public void addReunionShouldSetPlaceReservation() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException, NullReunionException, NullPlaceException, EmptySelectedParticipantsException {
-        this.initServices();
-        Reunion reunion = this.generateReunionNow();
+        Reunion reunion = this.createReunion(24, 0, new int[] {3}, "réu");;
         this.reunionService.addReunion(reunion);
         assertTrue(reunion.getPlace().getReservations().contains(reunion));
     }
 
     @Test
     public void addReunionShouldSetParticipantsAssignation() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException, NullReunionException, NullPlaceException, EmptySelectedParticipantsException {
-        this.initServices();
-        Reunion reunion = this.generateReunionNow();
+        Reunion reunion = this.createReunion(25, 0, new int[] {3}, "réu");;
         this.reunionService.addReunion(reunion);
         for(Participant participant: reunion.getParticipants()) {
             assertTrue(participant.getReservations().contains(reunion));
@@ -134,43 +113,25 @@ public class ReunionServiceTest {
     @Test
     public void addReunionShoudSetaSortedList() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException, NullReunionException, NullPlaceException, EmptySelectedParticipantsException {
 
-        this.initServices();
 
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime plus10Minutes = now.plusMinutes(10);
-        LocalDateTime plus60Minutes = now.plusMinutes(60);
-        LocalDateTime plus1Day = now.plusDays(1);
-        LocalDateTime plus2Days = now.plusDays(2);
+        Reunion reunionIn30Days = this.createReunion(30, 0, new int[] {3}, "réu");
 
-        Reunion reunionIn10Minutes = this.generateReunionNow();
-        reunionIn10Minutes.setStart(plus10Minutes);
-        reunionIn10Minutes.setEnd(plus10Minutes.plusMinutes(20));
-        reunionIn10Minutes.setPlace(PlaceService.LIST_OF_PLACES.get(1));
+        Reunion reunionIn31Days = this.createReunion(31, 0, new int[] {3}, "réu");
 
-        Reunion reunionIn60Minutes = this.generateReunionNow();
-        reunionIn60Minutes.setStart(plus60Minutes);
-        reunionIn60Minutes.setEnd(plus60Minutes.plusHours(1));
-        reunionIn60Minutes.setPlace(PlaceService.LIST_OF_PLACES.get(2));
+        Reunion reunionIn32Days = this.createReunion(32, 0, new int[] {3}, "réu");
 
-        Reunion reunionTomorrow = this.generateReunionNow();
-        reunionTomorrow.setStart(plus1Day);
-        reunionTomorrow.setEnd(plus1Day.plusMinutes(DELAY.REUNION_DURATION.getMinutes()));
-        reunionTomorrow.setPlace(PlaceService.LIST_OF_PLACES.get(0));
+        Reunion reunionIn33Days = this.createReunion(33, 0, new int[] {3}, "réu");
 
-        Reunion reunionIn2Days = this.generateReunionNow();
-        reunionIn2Days.setStart(plus2Days);
-        reunionIn2Days.setEnd(plus2Days.plusMinutes(20));
-        reunionIn2Days.setPlace(PlaceService.LIST_OF_PLACES.get(1));
-
-        this.reunionService.addReunion(reunionIn2Days);
-        this.reunionService.addReunion(reunionIn60Minutes);
-        this.reunionService.addReunion(reunionIn10Minutes);
-        this.reunionService.addReunion(reunionTomorrow);
-        assertEquals(reunionIn10Minutes, this.reunionService.getReunions().getValue().get(0));
-        assertEquals(reunionIn60Minutes, this.reunionService.getReunions().getValue().get(1));
-        assertEquals(reunionTomorrow, this.reunionService.getReunions().getValue().get(2));
-        assertEquals(reunionIn2Days, this.reunionService.getReunions().getValue().get(3));
+        this.reunionService.addReunion(reunionIn32Days);
+        this.reunionService.addReunion(reunionIn31Days);
+        this.reunionService.addReunion(reunionIn33Days);
+        this.reunionService.addReunion(reunionIn30Days);
+        int index = reunionService.getReunions().getValue().indexOf(reunionIn30Days);
+        assertEquals(reunionIn30Days, this.reunionService.getReunions().getValue().get(index));
+        assertEquals(reunionIn31Days, this.reunionService.getReunions().getValue().get(index + 1));
+        assertEquals(reunionIn32Days, this.reunionService.getReunions().getValue().get(index + 2));
+        assertEquals(reunionIn33Days, this.reunionService.getReunions().getValue().get(index + 3));
     }
 
     @After

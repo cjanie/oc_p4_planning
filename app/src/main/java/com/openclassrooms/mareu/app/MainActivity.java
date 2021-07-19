@@ -1,6 +1,7 @@
 package com.openclassrooms.mareu.app;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -30,7 +31,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        this.setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
         this.searchFragment.setVisibility(View.GONE);
