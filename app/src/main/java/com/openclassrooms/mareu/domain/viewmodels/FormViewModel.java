@@ -195,13 +195,12 @@ public class FormViewModel extends AndroidViewModel {
         this.reunionService.addReunion(this.createReunion());
     }
 
-    /*
     public void forward() {
         LocalDateTime nextStart = this.end.getValue().plusMinutes(DELAY.INTER_REUNIONS.getMinutes());
         LocalDateTime nextEnd = nextStart.plusMinutes(DELAY.REUNION_DURATION.getMinutes());
         this.start.setValue(nextStart);
         this.end.setValue(nextEnd);
     }
-    */
+
 
 }
