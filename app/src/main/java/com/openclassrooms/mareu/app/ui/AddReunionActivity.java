@@ -225,12 +225,6 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    @OnClick(R.id.next_reservation_fab)
-    public void onForward() {
-        this.formViewModel.forward();
-        this.getAvailableData();
-    }
-
     @OnClick(R.id.save_reunion_button)
     public void onSave() {
         try {
