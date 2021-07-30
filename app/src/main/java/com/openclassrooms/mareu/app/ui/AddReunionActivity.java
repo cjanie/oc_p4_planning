@@ -223,35 +223,7 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
         } catch (EmptyAvailableParticipantsException e) {
             this.errorHandler.signalError(this.errorHandler.getMessage(e), this.participantsLayout);
         }
-        /*
-        this.planningViewModel.getAllParticipants().observe(this, allParticipants -> {
-            // Prepare items
-            String[] labels = new String[0];
-            try {
-                labels = this.planningViewModel.getParticipantsLabels(allParticipants, new Reservation(this.formViewModel.getStart().getValue(), this.formViewModel.getEnd().getValue())).getValue();
-            } catch (NullDatesException | NullStartException | NullEndException | PassedDatesException | PassedStartException | InvalidEndException e) {
-                this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.participantsLayout);
-            }
-            boolean[] checkedArray = new boolean[allParticipants.size()];
-            for (int i = 0; i < allParticipants.size(); i++) {
-                if (this.formViewModel.getParticipants().getValue().contains(allParticipants.get(i))) {
-                    checkedArray[i] = true;
-                }
-            }
-            new ParticipantsPicker(this, allParticipants, labels, checkedArray).showParticipantsPickerDialog();
-        });
-
-         */
     }
-
-    /*
-    @OnClick(R.id.next_reservation_fab)
-    public void onForward() {
-        this.formViewModel.forward();
-        this.getAvailableData();
-    }
-    */
-
 
     @OnClick(R.id.save_reunion_button)
     public void onSave() {

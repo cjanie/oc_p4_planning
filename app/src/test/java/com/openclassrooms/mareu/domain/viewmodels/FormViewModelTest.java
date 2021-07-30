@@ -269,15 +269,6 @@ public class FormViewModelTest {
         this.formViewModel.save();
     }
 
-    @DisplayName("forward")
-    @Test
-    public void forwardWithSuccess() throws PassedDatesException, InvalidEndException, PassedStartException, NullStartException, NullEndException, NullDatesException, NullReservationException, UnavailablePlacesException, NullReunionException, NullPlaceException, EmptySelectedParticipantsException {
-        LocalDateTime currentEnd = this.formViewModel.getEnd().getValue();
-        this.formViewModel.forward();
-        assertEquals(currentEnd.plusMinutes(DELAY.INTER_REUNIONS.getMinutes()), this.formViewModel.getStart().getValue());
-    }
-
-
     @After
     public void tearDown() {
         this.formViewModel = null;
