@@ -25,4 +25,16 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/start_fragment" />
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/next_reservation_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin"
+        android:src="@drawable/ic_baseline_skip_next_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/end_fragment" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
