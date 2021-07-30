@@ -55,25 +55,6 @@ public class PlanningViewModel extends AndroidViewModel {
         return this.participantService.getParticipants();
     }
 
-    public LiveData<String[]> getParticipantsLabels(@NonNull List<Participant> participants, @NonNull Reservation reservation) {
-        String[] array = new String[participants.size()];
-        if(!participants.isEmpty()) {
-            List<String> labels = new ArrayList<>(); // Prepare labels as list first
-            for (Participant participant : participants) {
-                StringBuilder stringBuilder = new StringBuilder("");
-                stringBuilder.append(participant.getFirstName() + " : ");
-                if (participant.isAvailable(reservation)) {
-                    stringBuilder.append(this.getApplication().getString(R.string.available));
-                } else {
-                    stringBuilder.append(this.getApplication().getString(R.string.unavailable));
-                }
-                labels.add(stringBuilder.toString());
-            }
-            labels.toArray(array); // Converts list to array
-        }
-        return new MutableLiveData<>(array);
-    }
-
     public LiveData<List<Reunion>> getAllReunions() {
         return this.reunionService.getReunions();
     }
@@ -108,7 +89,7 @@ public class PlanningViewModel extends AndroidViewModel {
         if(reservation == null) {
             throw new NullReservationException();
         } else {
-            List<Participant> listOfAllParticipants = this.participantService.getParticipants().getValue(); // Get the data that has to be filtered
+            List<Participant> listOfAllParticipants = this.getAllParticipants().getValue(); // Get the data that has to be filtered
             if(listOfAllParticipants != null && !listOfAllParticipants.isEmpty()) {
                 List<Participant> listOfAvailableParticipants = new ArrayList<>(); // Instantiate the list that will receive filtered data
                 for(Participant participant: listOfAllParticipants) {

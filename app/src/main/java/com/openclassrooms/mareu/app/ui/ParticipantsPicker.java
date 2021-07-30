@@ -10,8 +10,7 @@ import androidx.annotation.NonNull;
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.data.entities.Participant;
 import com.openclassrooms.mareu.domain.events.SetParticipantsEvent;
-import com.openclassrooms.mareu.domain.viewmodels.FormViewModel;
-import com.openclassrooms.mareu.domain.viewmodels.PlanningViewModel;
+
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -20,9 +19,6 @@ import java.util.List;
 
 public class ParticipantsPicker extends Dialog {
 
-    private PlanningViewModel planningViewModel;
-
-    private FormViewModel formViewModel;
 
     private List<Participant> participants;
 
@@ -30,11 +26,18 @@ public class ParticipantsPicker extends Dialog {
 
     private boolean[] checkedArray;
 
-    public ParticipantsPicker(@NonNull Context context, @NonNull List<Participant> participants, @NonNull String[] labels, @NonNull boolean[] checkedArray) {
+    public ParticipantsPicker(@NonNull Context context, @NonNull List<Participant> participants, @NonNull boolean[] checkedArray) {
         super(context);
         this.participants = participants;
-        this.labels = labels;
+        this.makeLabels();
         this.checkedArray = checkedArray;
+    }
+
+    private void makeLabels() {
+        this.labels = new String[participants.size()];
+        for(int i=0; i<participants.size(); i++) {
+            labels[i] = participants.get(i).getFirstName();
+        }
     }
 
     public void showParticipantsPickerDialog() {

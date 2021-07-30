@@ -208,6 +208,22 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
 
     @OnClick(R.id.reunion_participants_spinner)
     public void showParticipantsDialog() {
+        try {
+            this.planningViewModel.getAvailableParticipants(new Reservation(this.formViewModel.getStart().getValue(), this.formViewModel.getEnd().getValue())).observe(this, availableParticipants -> {
+                boolean[] checkedArray = new boolean[availableParticipants.size()];
+                for (int i = 0; i < availableParticipants.size(); i++) {
+                    if (this.formViewModel.getParticipants().getValue().contains(availableParticipants.get(i))) {
+                        checkedArray[i] = true;
+                    }
+                }
+                new ParticipantsPicker(this, availableParticipants, checkedArray).showParticipantsPickerDialog();
+            });
+        } catch (NullDatesException | NullStartException | NullEndException | PassedDatesException | PassedStartException | InvalidEndException | NullReservationException e) {
+            this.errorHandler.signalError(this.errorHandler.getMessage(new NullReservationException()), this.startDateLayout);
+        } catch (EmptyAvailableParticipantsException e) {
+            this.errorHandler.signalError(this.errorHandler.getMessage(e), this.participantsLayout);
+        }
+        /*
         this.planningViewModel.getAllParticipants().observe(this, allParticipants -> {
             // Prepare items
             String[] labels = new String[0];
@@ -224,13 +240,18 @@ public class AddReunionActivity extends AppCompatActivity implements AdapterView
             }
             new ParticipantsPicker(this, allParticipants, labels, checkedArray).showParticipantsPickerDialog();
         });
+
+         */
     }
 
+    /*
     @OnClick(R.id.next_reservation_fab)
     public void onForward() {
         this.formViewModel.forward();
         this.getAvailableData();
     }
+    */
+
 
     @OnClick(R.id.save_reunion_button)
     public void onSave() {
