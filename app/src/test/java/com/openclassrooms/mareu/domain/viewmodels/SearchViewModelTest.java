@@ -57,15 +57,15 @@ public class SearchViewModelTest {
         ReunionService.getInstance().addReunion(reunion);
     }
 
-    @DisplayName("search reunions by place should return empty list at init")
     @Test
     public void searchReunionsByPlaceShouldReturnList() throws NullPlaceException, InvalidEndException, NullEndException, PassedStartException, NullStartException, PassedDatesException, EmptySelectedParticipantsException, NullReunionException, NullDatesException {
+        // empty list at init
         assert(this.searchViewModel.searchReunionsByPlace(PlaceService.LIST_OF_PLACES.get(0)).getValue().isEmpty());
+        // save reunion then search
         this.saveReunion(this.now.plusDays(1), 0, new int[] {3}, "réu");
         assertEquals(1, this.searchViewModel.searchReunionsByPlace(PlaceService.LIST_OF_PLACES.get(0)).getValue().size());
     }
 
-    @DisplayName("search reunions by date should return empty list at init")
     @Test
     public void searchReunionsByDateShouldReturnList() throws NullPlaceException, InvalidEndException, NullEndException, PassedStartException, NullStartException, PassedDatesException, EmptySelectedParticipantsException, NullReunionException, NullDatesException {
         assert(this.searchViewModel.searchReunionsByDate(this.now.toLocalDate()).getValue().isEmpty());
@@ -75,7 +75,6 @@ public class SearchViewModelTest {
         assertEquals(2, this.searchViewModel.searchReunionsByDate(this.now.plusDays(3).toLocalDate()).getValue().size());
     }
 
-    @DisplayName("search reunions by place and date should return empty list at init")
     @Test
     public void searchReunionsByPlaceAndDateShouldReturnList() {
         Place place = this.searchViewModel.getAllPlaces().getValue().get(0);

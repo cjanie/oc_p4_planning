@@ -113,14 +113,9 @@ public class ReunionServiceTest {
     @Test
     public void addReunionShoudSetaSortedList() throws PassedStartException, PassedDatesException, NullStartException, NullDatesException, InvalidEndException, NullEndException, NullReunionException, NullPlaceException, EmptySelectedParticipantsException {
 
-
-
         Reunion reunionIn30Days = this.createReunion(30, 0, new int[] {3}, "réu");
-
         Reunion reunionIn31Days = this.createReunion(31, 0, new int[] {3}, "réu");
-
         Reunion reunionIn32Days = this.createReunion(32, 0, new int[] {3}, "réu");
-
         Reunion reunionIn33Days = this.createReunion(33, 0, new int[] {3}, "réu");
 
         this.reunionService.addReunion(reunionIn32Days);

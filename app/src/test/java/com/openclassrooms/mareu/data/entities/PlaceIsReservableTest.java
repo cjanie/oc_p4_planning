@@ -1,12 +1,14 @@
 package com.openclassrooms.mareu.data.entities;
 
 import com.openclassrooms.mareu.data.exceptions.InvalidEndException;
+import com.openclassrooms.mareu.data.exceptions.InvalidEndTimeException;
 import com.openclassrooms.mareu.data.exceptions.NullDatesException;
 import com.openclassrooms.mareu.data.exceptions.NullEndException;
 import com.openclassrooms.mareu.data.exceptions.NullPlaceException;
 import com.openclassrooms.mareu.data.exceptions.NullStartException;
 import com.openclassrooms.mareu.data.exceptions.PassedDatesException;
 import com.openclassrooms.mareu.data.exceptions.PassedStartException;
+import com.openclassrooms.mareu.data.exceptions.PassedStartTimeException;
 import com.openclassrooms.mareu.data.exceptions.UnavailableException;
 
 import org.junit.Before;
@@ -54,11 +56,11 @@ public class PlaceIsReservableTest {
         Place place = new Place();
         assertTrue(place.isAvailable(this.resAt7));
     }
-    /*
+
     @Test
-    public void placeWithAReservationShouldNotBeAvailableForAnotherReservationAtTheSameTime() throws PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    public void placeWithAReservationShouldNotBeAvailableForAnotherReservationAtTheSameTime() throws PassedDatesException, NullDatesException, PassedStartException, NullStartException, InvalidEndException, NullEndException, UnavailableException {
         Place place = new Place();
-        place.addReservationRespectingAscendantOrderOfTime(new Reservation(this.now.plusHours(4), this.now.plusHours(5)));
+        place.addReservationIfAvailable(new Reservation(this.now.plusHours(4), this.now.plusHours(5)));
         assertFalse(place.isAvailable(new Reservation(this.now.plusHours(4), this.now.plusHours(6))));
         assertFalse(place.isAvailable(new Reservation(this.now.plusHours(4).plusMinutes(10), this.now.plusHours(7))));
         assertFalse(place.isAvailable(new Reservation(this.now.plusHours(3), this.now.plusHours(4).plusMinutes(10))));
@@ -67,14 +69,14 @@ public class PlaceIsReservableTest {
     }
 
     @Test
-    public void placeWithManyReservationsShouldNotBeAvailableForAnotherReservationAtTheSameTime() throws PassedDatesException, InvalidEndTimeException, NullDatesException, NullStartTimeException, NullEndTimeException, PassedStartTimeException {
+    public void placeWithManyReservationsShouldNotBeAvailableForAnotherReservationAtTheSameTime() throws PassedDatesException, InvalidEndTimeException, NullDatesException, PassedStartException, NullStartException, InvalidEndException, NullEndException, UnavailableException {
         Place place = new Place();
-        place.addReservationRespectingAscendantOrderOfTime(new Reservation(this.now.plusHours(4), this.now.plusHours(5)));
-        place.addReservationRespectingAscendantOrderOfTime(new Reservation(this.now.plusHours(6), this.now.plusHours(7)));
+        place.addReservationIfAvailable(new Reservation(this.now.plusHours(4), this.now.plusHours(5)));
+        place.addReservationIfAvailable(new Reservation(this.now.plusHours(6), this.now.plusHours(7)));
         assertFalse(place.isAvailable(new Reservation(this.now.plusHours(4).plusMinutes(30), this.now.plusHours(6).plusMinutes(30))));
         assertFalse(place.isAvailable(new Reservation(this.now.plusHours(3), this.now.plusHours(7))));
     }
- */
+
     @Test
     public void placeReservationsShouldBeSorted() throws UnavailableException {
         Place place = new Place();

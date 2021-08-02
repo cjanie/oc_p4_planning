@@ -49,6 +49,8 @@ import static org.junit.Assert.assertNull;
 
 public class FormViewModelTest {
 
+    private LocalDateTime now;
+
 
     @Rule
     public InstantTaskExecutorRule instantExecutor = new InstantTaskExecutorRule(); // Necessary !!!
@@ -59,30 +61,32 @@ public class FormViewModelTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        now = LocalDateTime.now();
     }
 
-    private Reunion generateReunion() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime start = now.plusDays(1);
-        LocalDateTime end = now.plusDays(1).plusHours(1);
-
+    private Reunion generateReunion(int plusDays, Integer indexOfPlace, Integer[] indexesOfParticipants, String subject) throws InvalidEndException, PassedDatesException, NullStartException, NullDatesException, NullEndException, PassedStartException {
+        LocalDateTime start = now.plusDays(plusDays);
+        LocalDateTime end = start.plusHours(1);
         Reunion reunion = new Reunion(start, end);
-        reunion.setPlace(PlaceService.LIST_OF_PLACES.get(0));
+        reunion.setPlace(PlaceService.LIST_OF_PLACES.get(indexOfPlace));
         List<Participant> participants = new ArrayList<>();
-        participants.add(ParticipantService.LIST_OF_PARTICIPANTS.get(0));
-        participants.add(ParticipantService.LIST_OF_PARTICIPANTS.get(1));
-        reunion.setParticipants(participants);
-        reunion.setSubject("Ola");
+        for(int i=0; i<indexesOfParticipants.length; i++) {
+            participants.add(ParticipantService.LIST_OF_PARTICIPANTS.get(i));
+            reunion.setParticipants(participants);
+        }
+        reunion.setSubject(subject);
         return reunion;
     }
 
-    // START DATE TIME
-    @DisplayName("get start date time should not return null")
-    @Test
-    public void getStartValueShouldNotReturnNull() {
-        assertNotNull(this.formViewModel.getStart().getValue());
+    private void saveReunion(Reunion reunion) throws NullStartException, InvalidEndDateException, NullDatesException, InvalidEndTimeException, NullEndException, PassedStartDateException, PassedStartTimeException, NullPlaceException, PassedDatesException, NullReunionException, EmptySubjectException, EmptySelectedParticipantsException, InvalidEndException, PassedStartException {
+        this.formViewModel.setStart(reunion.getStart());
+        this.formViewModel.setEnd(reunion.getEnd());
+        this.formViewModel.setPlace(reunion.getPlace());
+        this.formViewModel.setParticipants(reunion.getParticipants());
+        this.formViewModel.setSubject(reunion.getSubject());
+        this.formViewModel.save();
     }
-
+    // START DATE TIME
     @DisplayName("get start date time at init should return now")
     @Test
     public void getStartAtInitShouldReturnNow() {
@@ -121,20 +125,6 @@ public class FormViewModelTest {
     }
 
     // END DATE TIME
-    @DisplayName("get end date time should not return null")
-    @Test
-    public void getEndValueShouldNotReturnNull() {
-        assertNotNull(this.formViewModel.getEnd().getValue());
-    }
-
-    @DisplayName("get end date time at init should return now + 1 hour")
-    @Test
-    public void getEndDateAtInitShouldReturnDateOfToday() throws NullDatesException, PassedDatesException, PassedStartDateException, InvalidEndException, InvalidEndDateException, NullStartException, NullEndException, PassedStartException {
-        LocalDateTime now = LocalDateTime.now().plusHours(1);
-        assert(now.minusHours(1).isBefore(this.formViewModel.getEnd().getValue()));
-        assert(now.plusHours(1).isAfter(this.formViewModel.getEnd().getValue()));
-    }
-
 
     @DisplayName("set end then get end date time should return date time")
     @Test
@@ -188,11 +178,6 @@ public class FormViewModelTest {
     }
 
     // SUBJECT
-    @DisplayName("get Subject should not return null")
-    @Test
-    public void getSubjectShouldNotReturnNull() {
-        assertNotNull(this.formViewModel.getSubject());
-    }
 
     @DisplayName("get subject at init should return an empty string")
     @Test
@@ -214,59 +199,34 @@ public class FormViewModelTest {
         assertEquals(changeSubject, this.formViewModel.getSubject().getValue());
     }
 
-    // CREATE REUNION
-    @DisplayName("create reunion with success")
+    // SAVE REUNION
+    @DisplayName("save reunion with success")
     @Test
-    public void createReunionSucceeds() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, PassedStartDateException, InvalidEndDateException, NullPlaceException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, NullParticipantsException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException, NullReunionException {
-        Reunion reunion = this.generateReunion();
-        this.formViewModel.setStart(reunion.getStart());
-        this.formViewModel.setEnd(reunion.getEnd());
-        this.formViewModel.setPlace(reunion.getPlace());
-        this.formViewModel.setParticipants(reunion.getParticipants());
-        this.formViewModel.setSubject(reunion.getSubject());
-        //Reunion returned = this.formViewModel.save();
-       // assertEquals(reunion.getParticipants(), returned.getParticipants());
-        //assertEquals(reunion.getPlace(), returned.getPlace());
+    public void saveReunionSucceeds() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, PassedStartDateException, InvalidEndDateException, NullPlaceException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, NullParticipantsException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException, NullReunionException {
+        Reunion reunion = this.generateReunion(4, 0, new Integer[] {1}, "réu");
+        this.saveReunion(reunion);
     }
 
-    @DisplayName("create reunion throws null place exception")
+    @DisplayName("save reunion throws null place exception")
     @Test(expected = NullPlaceException.class)
-    public void createReunionWithPlaceAsNullShouldThrowException() throws PassedDatesException, InvalidEndException, PassedStartException, NullStartException, NullEndException, NullDatesException, PassedStartDateException, InvalidEndDateException, NullPlaceException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException, NullReunionException {
-        Reunion reunion = this.generateReunion();
+    public void saveReunionWithPlaceAsNullShouldThrowException() throws PassedDatesException, InvalidEndException, PassedStartException, NullStartException, NullEndException, NullDatesException, PassedStartDateException, InvalidEndDateException, NullPlaceException, EmptySubjectException, EmptySelectedParticipantsException, NullReservationException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException, NullReunionException {
+        Reunion reunion = this.generateReunion(1, 0, new Integer[] {2}, "réu");
         reunion.setPlace(null);
-
-        this.formViewModel.setStart(reunion.getStart());
-        this.formViewModel.setEnd(reunion.getEnd());
-        this.formViewModel.setPlace(reunion.getPlace());
-        this.formViewModel.setParticipants(reunion.getParticipants());
-        this.formViewModel.setSubject(reunion.getSubject());
-        this.formViewModel.save();
+        this.saveReunion(reunion);
     }
 
-    @DisplayName("create reunion throws empty selected participants exception")
+    @DisplayName("save reunion throws empty selected participants exception")
     @Test(expected = EmptySelectedParticipantsException.class)
     public void setSelectedParticipantsAsEmptyShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException, NullReunionException {
-        Reunion reunion = this.generateReunion();
-
-        this.formViewModel.setStart(reunion.getStart());
-        this.formViewModel.setEnd(reunion.getEnd());
-        this.formViewModel.setPlace(PlaceService.LIST_OF_PLACES.get(1));
-        this.formViewModel.setParticipants(new ArrayList<>());
-        this.formViewModel.setSubject(reunion.getSubject());
-        this.formViewModel.save();
+        Reunion reunion = this.generateReunion(3, 0, new Integer[0], "reu");
+        this.saveReunion(reunion);
     }
 
-    @DisplayName("create reunion throws empty subject exception")
+    @DisplayName("save reunion throws empty subject exception")
     @Test(expected = EmptySubjectException.class)
-    public void buildReunionFailWhenSubjectIsEmptyShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException, NullReunionException {
-        Reunion reunion = this.generateReunion();
-
-        this.formViewModel.setStart(reunion.getStart());
-        this.formViewModel.setEnd(reunion.getEnd());
-        this.formViewModel.setPlace(reunion.getPlace());
-        this.formViewModel.setParticipants(reunion.getParticipants());
-        this.formViewModel.setSubject("");
-        this.formViewModel.save();
+    public void saveReunionWhenSubjectIsEmptyShouldThrowException() throws PassedDatesException, InvalidEndException, NullDatesException, NullStartException, NullEndException, PassedStartException, PassedStartDateException, InvalidEndDateException, NullPlaceException, NullReservationException, UnavailablePlacesException, EmptySubjectException, EmptySelectedParticipantsException, NullParticipantsException, EmptyAvailableParticipantsException, PassedStartTimeException, InvalidEndTimeException, NullReunionException {
+        Reunion reunion = this.generateReunion(2, 0, new Integer[] {1}, "");
+        this.saveReunion(reunion);
     }
 
     @After
