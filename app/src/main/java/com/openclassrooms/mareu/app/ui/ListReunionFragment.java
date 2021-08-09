@@ -110,7 +110,6 @@ public class ListReunionFragment extends Fragment {
     public void onSearchByPlaceEventFired(SearchByPlaceEvent event) {
         List<Reunion> found = this.searchViewModel.searchReunionsByPlace(event.place).getValue();
         recyclerView.setAdapter(new ListReunionRecyclerViewAdapter(found));
-
     }
 
     @Subscribe
