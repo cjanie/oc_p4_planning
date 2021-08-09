@@ -72,27 +72,16 @@ public class AddReunionActivityTest {
     }
 
     @Test
-    public void onSaveSuccessShouldIncrementListOfReunions() {
+    public void addAndDeleteshouldIncrementedAndDecrementListWhenReunionIsToday() {
         // Check list of reunions before saving
-        int size = ReunionService.getInstance().getReunions().getValue().size();
+        int size = 0;
         // Save Reunion
-        this.reunionHandler.saveReunion(1, 0, new int[] {3}, "réu");
+        this.reunionHandler.saveReunion(0, 0, new int[] {3}, "réu");
         // Then list should be incremented
         onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount(size + 1)));
-        // return to form page
-        onView(ViewMatchers.withId(R.id.reunions_fab_add)).perform(click());
-    }
-
-    @Test
-    public void onRemoveSuccessShouldDecrementListOfReunions() {
-        // Save Reunion
-        this.reunionHandler.saveReunion(1, 0, new int[] {3}, "réu");
-        // Check list of reunions before deleting
-        int size = ReunionService.getInstance().getReunions().getValue().size();
-        // Delete
+        // remove the reunion
         onView(ViewMatchers.withId(R.id.recycler_view)).perform(RecyclerViewActions.actionOnItemAtPosition(0, new DeleteViewAction()));
-        // Then list should be decremented
-        onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasChildCount(size - 1)));
+        onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount(size)));
         // return to form page
         onView(ViewMatchers.withId(R.id.reunions_fab_add)).perform(click());
     }
@@ -226,7 +215,7 @@ public class AddReunionActivityTest {
 
         String expectedError = this.getActivity().getString(R.string.error_empty_subject);
 
-        this.reunionHandler.saveReunion(8, 0, new int[] {3}, "");
+        this.reunionHandler.saveReunion(0, 0, new int[] {3}, "");
         onView(withId(R.id.reunion_subject_layout)).check(matches(ErrorViewMatcher.hasTextInputLayoutErrorText(expectedError)));
         // Correct the error
         onView(ViewMatchers.withId(R.id.reunion_subject)).perform(replaceText("Réu"));
@@ -234,6 +223,8 @@ public class AddReunionActivityTest {
         onView(ViewMatchers.withId(R.id.save_reunion_button)).perform(scrollTo());
         onView(ViewMatchers.withId(R.id.save_reunion_button)).perform(click());
         onView(ViewMatchers.withId(R.id.recycler_view)).check(matches(hasMinimumChildCount(size + 1)));
+        // Delete
+        onView(ViewMatchers.withId(R.id.recycler_view)).perform(RecyclerViewActions.actionOnItemAtPosition(0, new DeleteViewAction()));
         // return to form page
         onView(ViewMatchers.withId(R.id.reunions_fab_add)).perform(click());
     }

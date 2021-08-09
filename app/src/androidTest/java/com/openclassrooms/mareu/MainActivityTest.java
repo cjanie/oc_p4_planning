@@ -80,10 +80,10 @@ public class MainActivityTest {
     }
 
     @Test
-    public void searchByPlaceWithSuccess() {
+    public void searchByPlaceWithSuccessIfToday() {
         // Navigate to form page and save reunion
         onView(ViewMatchers.withId(R.id.reunions_fab_add)).perform(click());
-        this.reunionHandler.saveReunion(12, 1,   new int[] {3}, "réu");
+        this.reunionHandler.saveReunion(0, 1,   new int[] {3}, "réu");
         // Show search fragment
         onView(ViewMatchers.withId(R.id.action_search)).perform(click());
         // Case find

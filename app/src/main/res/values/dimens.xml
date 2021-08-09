@@ -4,5 +4,6 @@
     <dimen name="image_margin">16dp</dimen>
     <dimen name="margin">16dp</dimen>
     <dimen name="margin_half">8dp</dimen>
-    <dimen name="small_text">10sp</dimen>
+    <dimen name="small_text">16dp</dimen>
+    <dimen name="big_text">20dp</dimen>
 </resources>

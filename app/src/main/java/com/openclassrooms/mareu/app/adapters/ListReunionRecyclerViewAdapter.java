@@ -43,10 +43,9 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
         Reunion reunion = this.reunions.get(position);
         CustomDateTimeFormatter customDateTimeFormatter = new CustomDateTimeFormatter();
         holder.mainInformations.setText(
-                reunion.getSubject() + " - " + reunion.getPlace().getName()+ "\n"
-                        + customDateTimeFormatter.formatDateTimeToString(reunion.getStart()) + "\n"
-                        + customDateTimeFormatter.formatDateTimeToString(reunion.getEnd())
-        );
+                reunion.getSubject() + " - "
+                        + customDateTimeFormatter.formatTimeToString(reunion.getStart().toLocalTime()) + " - "
+                        + reunion.getPlace().getName());
 
         LocalDateTime now = LocalDateTime.now();
          if(reunion.getStart().isBefore(now)) {
