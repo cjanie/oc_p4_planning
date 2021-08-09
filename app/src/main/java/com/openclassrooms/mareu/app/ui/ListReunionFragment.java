@@ -58,10 +58,8 @@ public class ListReunionFragment extends Fragment {
         Context context = root.getContext();
         this.recyclerView = (RecyclerView) root;
         this.recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        this.recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
         return root;
-
     }
 
     @Override

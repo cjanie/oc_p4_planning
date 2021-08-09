@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="image_square_size">32dp</dimen>
+    <dimen name="image_square_size">50dp</dimen>
     <dimen name="image_margin">16dp</dimen>
     <dimen name="margin">16dp</dimen>
+    <dimen name="big_margin">18dp</dimen>
     <dimen name="margin_half">8dp</dimen>
-    <dimen name="small_text">16dp</dimen>
-    <dimen name="big_text">20dp</dimen>
+    <dimen name="small_text">18dp</dimen>
+    <dimen name="big_text">18dp</dimen>
 </resources>

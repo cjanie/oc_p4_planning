@@ -17,10 +17,12 @@ import com.openclassrooms.mareu.app.utils.CustomDateTimeFormatter;
 import org.greenrobot.eventbus.EventBus;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReunionRecyclerViewAdapter.ViewHolder> {
 
@@ -38,13 +40,21 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
         return new ListReunionRecyclerViewAdapter.ViewHolder(view);
     }
 
+    private String formatTime(LocalTime time) {
+
+        CustomDateTimeFormatter customDateTimeFormatter = new CustomDateTimeFormatter();
+        String formatted = customDateTimeFormatter.formatTimeToString(time);
+        formatted = formatted.replace(':', 'h');
+        return formatted;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull ListReunionRecyclerViewAdapter.ViewHolder holder, int position) {
         Reunion reunion = this.reunions.get(position);
         CustomDateTimeFormatter customDateTimeFormatter = new CustomDateTimeFormatter();
         holder.mainInformations.setText(
                 reunion.getSubject() + " - "
-                        + customDateTimeFormatter.formatTimeToString(reunion.getStart().toLocalTime()) + " - "
+                        + this.formatTime(reunion.getStart().toLocalTime()) + " - "
                         + reunion.getPlace().getName());
 
         LocalDateTime now = LocalDateTime.now();
@@ -95,6 +105,16 @@ public class ListReunionRecyclerViewAdapter extends RecyclerView.Adapter<ListReu
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        @OnClick(R.id.main_informations)
+        public void showMoreMainInformations() {
+            this.mainInformations.setMaxLines(5);
+        }
+
+        @OnClick(R.id.participants)
+        public void showMoreParticipants() {
+            this.participants.setMaxLines(6);
         }
     }
 }

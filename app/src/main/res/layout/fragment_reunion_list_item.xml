@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/margin"
-    android:layout_marginVertical="@dimen/margin_half">
+    android:layout_marginVertical="@dimen/big_margin">
 
     <ImageView
         android:id="@+id/image"
@@ -34,6 +34,8 @@
             android:text="main informations"
             android:textStyle="bold"
             android:textSize="@dimen/big_text"
+            android:maxLines="1"
+            android:ellipsize = "end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
